@@ -198,9 +198,12 @@ if [[ $? == "0" ]]; then  #if yes
    sudo systemctl restart nfs-kernel-server.service
 fi
 
-confirm "Would you like to delete the local iso?"  #yes no question
+if [[ -f ${file} ]]; then
+	
+   confirm "Would you like to delete the local iso?"  #yes no question
 
-if [[ $? == "0" ]]; then  #if yes
-   printf "%s\n" "Deleting local iso file ${file}"
-   sudo rm ${file}
+   if [[ $? == "0" ]]; then  #if yes
+      printf "%s\n" "Deleting local iso file ${file}"
+      sudo rm ${file}
+   fi
 fi
