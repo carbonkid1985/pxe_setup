@@ -12,6 +12,37 @@ syslinux_dir="/usr/lib/syslinux/modules/bios/"
 pxelinux_dir="/usr/lib/PXELINUX/"
 #mount_point="/mnt"
 
+filestructure_setup ()
+{
+   if [[ ! -f "${tftp_dir}/pxelinux.cfg/pxe.conf" ]]; then
+      confirm "Configure default menu structure?"
+      if [[ $? == "0" ]]; then # if yes
+         printf "%s\n" "Creating file structure"
+         mkdir -p ${tftp_dir}/pxelinux.cfg
+         confirm "Create default menu conf file?"
+         if [[ $? == "0" ]]; then # if yes
+            printf "%s\n" "Creating default menu conf"
+            cat > "${tftp_dir}/pxelinux.cfg/pxe.conf" << EOF
+MENU TITLE  Pavey's PXE Server
+MENU BACKGROUND pxelinux.cfg/pxe_splash.png
+NOESCAPE 1
+ALLOWOPTIONS 1
+PROMPT 0
+menu width 80
+menu rows 14
+MENU TABMSGROW 24
+MENU MARGIN 10
+menu color title		1;36;44		#ff8950fc #00000000 std
+menu color sel			7;37;40		#ff8950fc #00000000 std
+menu color unsel		37;44		#c04f4e63 #00000000 std
+menu color help			37;40		#c0ffffff #00000000 std
+menu color border		51;153;255	#00ffffff #00000000 none
+EOF
+         fi
+      fi
+   fi
+}
+
 tftpd_setup ()
 {
    confirm "Install tftpd-hpa?"
@@ -90,11 +121,7 @@ if [[ $? != "0"  ]]; then # returns 0 if root
    exit 0
 fi
 
-if [[ ! -d ${tftp_dir} ]]; then
-   printf "%s\n" "Creating ${tftp_dir}"
-   mkdir -p ${tftp_dir}
-fi
-
+filestructure_setup
 tftpd_setup
 dhcpd_setup
 syslinux_setup
