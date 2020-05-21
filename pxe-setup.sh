@@ -16,6 +16,14 @@ tftpd_setup ()
    fi
 }
 
+dhcpd_setup ()
+{
+   confirm "Install isc-dhcpd"
+   if [[ $? == "0" ]]; then # if yes
+      printf "%s\n" "Install DHCPD"
+   fi
+}
+
 ## Start of script
 
 check_root
@@ -26,3 +34,4 @@ if [[ $? != "0"  ]]; then # returns 0 if root
 fi
 
 tftpd_setup
+dhcpd_setup
