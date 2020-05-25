@@ -216,7 +216,7 @@ if [[ ! -z $1 ]]; then
       file=/tmp/${url##*/}
    fi
 else
-   printf "%s\n" "Usage: pxe.sh {local iso file or URL}"; exit 0
+   printf "%s\n" "Usage: pxe-release-ubuntu.sh [local iso file or URL]..."; exit 0
 fi
 
 # set parameter
