@@ -23,3 +23,19 @@ confirm() {
       esac
    done
 }
+
+search() {
+#
+# syntax: search [<string>] file
+#
+# Searches a file fora given string returns 0 for true
+
+   local result
+   result=$(grep -i "$1" "$2")
+   #echo $result
+   if [[ -n "$result" ]]; then
+      return 0
+   else
+      return 1
+   fi
+}

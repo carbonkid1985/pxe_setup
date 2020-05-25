@@ -1,12 +1,16 @@
 #! /bin/bash
 
-source menus.sh
+source functions.sh
 source rootcheck.sh
 
 ## global vars
 nfs_server_ip=192.168.0.2
-ubuntu_dir="/data/tftpboot/ubuntu/desktop"
+tftp_dir="/data/tftpboot"
+ubuntu_dir="${tftp_dir}/ubuntu/desktop"
 mount_point="/mnt"
+menu_str="${ubuntu_dir}/desktop.menu"
+menu_path="${tftp_dir}/ubuntu/ubuntu.menu"
+default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
 
@@ -105,8 +109,71 @@ umount_iso ()
 
 append_menu ()
 {
-   printf "%s\n" "Adding menu entry"
-   printf -v rand "%05d" $((1 + RANDOM % 32767))
+   search "menu begin ubuntu" "${default_menu}"
+   if [[ $? != "0" ]]; then
+      printf "%s\n" "Adding default menu entry"
+      cat >> "${default_menu}" << EOF
+
+MENU BEGIN Ubuntu
+	MENU TITLE Ubuntu
+        LABEL Previous
+        MENU LABEL Previous Menu
+        TEXT HELP
+        Return to previous menu
+        ENDTEXT
+        MENU EXIT
+        MENU SEPARATOR
+        MENU INCLUDE ubuntu/ubuntu.menu
+MENU END
+
+EOF
+
+   fi
+
+   if [[ ! -f "${menu_path}" ]]; then
+      printf "%s\n" "Creating disto menu"
+      cat > "${menu_path}" << EOF
+# initrd path is relative to pxe root (/tftpboot)
+# nfsroot ip is pxe server's address
+
+EOF
+
+   fi
+   search "menu include ubuntu/desktop/desktop.menu" "${menu_path}"
+   if [[ $? != "0" ]]; then 
+      printf "%s\n" "Adding distro menu entry"
+      cat >> "${menu_path}" << EOF
+
+MENU BEGIN Desktop
+MENU TITLE Desktop
+	LABEL Previous
+	MENU LABEL Previous Menu
+	TEXT HELP
+	Return to previous menu
+	ENDTEXT
+	MENU EXIT
+	MENU SEPARATOR
+	MENU INCLUDE ubuntu/desktop/desktop.menu
+MENU END
+
+EOF
+
+   fi
+   
+   if [[ ! -f "${menu_str}" ]]; then
+      printf "%s\n" "Creating flavour menu"
+      cat > "${menu_str}" << EOF
+# initrd path is relative to pxe root (/tftpboot)
+# nfsroot ip is pxe server's address
+
+EOF
+
+   fi  
+
+   search "menu label ${menu_flavour} ${version} x64 ${menu_de}" "${menu_str}"
+   if [[ $? != "0" ]]; then
+      printf "%s\n" "Adding flavour menu entry"
+      printf -v rand "%05d" $((1 + RANDOM % 32767))
    cat >> "${ubuntu_dir}/desktop.menu" << EOF
 LABEL ${rand}
 	MENU LABEL ${menu_flavour} ${version} x64 ${menu_de}
@@ -119,6 +186,7 @@ ENDTEXT
 
 EOF
 
+   fi
 }
 
 append_exports ()
@@ -167,7 +235,7 @@ if [ ! -z ${url} ]; then  ## if the image is a URL go ahead and attempt to downl
 
    if [[ $? == "0" ]]; then  #if yes
       printf "%s\n" "Download started"
-      wget ${url} -P /tmp
+      wget ${url} -O /tmp/${iso}
 
       if [[ ! -f ${file} ]]; then
          printf "%s\n" "Unable to find downloaded file. Please check URL"; exit 0
