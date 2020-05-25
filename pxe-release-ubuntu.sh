@@ -1,7 +1,6 @@
 #! /bin/bash
 
 source functions.sh
-source rootcheck.sh
 
 ## global vars
 nfs_server_ip=192.168.0.2
