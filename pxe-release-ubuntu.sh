@@ -23,7 +23,8 @@ options=("Ubuntu"
 	 "Lubuntu"
 	 "Kubuntu"
 	 "Ubuntu Mate"
-	 "Ubuntu Budgie")
+	 "Ubuntu Budgie"
+ 	 "Other")
 
 printf "%s\n" "${title}"
 PS3="${prompt} "
@@ -37,10 +38,17 @@ select opt in "${options[@]}" "Quit"; do
    4 ) flavour="kubuntu"; de="kde"; menu_flavour="${flavour^}"; menu_de="${de^^}";;
    5 ) flavour="ubuntu_mate"; de="mate"; menu_flavour="Ubuntu Mate"; menu_de="${de^^}";;
    6 ) flavour="ubuntu_budgie"; de="budgie"; menu_flavour="Ubuntu Budgie"; menu_de="${de^}";;
+   7 ) flavour="other";;
    $(( ${#options[@]}+1 )) ) printf "%s\n" "Goodbye!"; exit 0;;
    *) printf "%s\n" "Invalid option. Try another one.";continue;;
 
    esac
+
+   if [[ ${flavour} == "other"  ]]; then
+	   printf "%s\n" "other"
+   fi
+
+
 printf "You selected %s\n\n" "${opt}"
 break
 done
