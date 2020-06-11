@@ -45,9 +45,25 @@ select opt in "${options[@]}" "Quit"; do
    esac
 
    if [[ ${flavour} == "other"  ]]; then
-	   printf "%s\n" "other"
-   fi
+	prompt="Enter ubuntu flavor: "
+	read -p "${prompt}" flavour
 
+	while [ -z ${flavour}  ]; do
+		printf "%s\n" "No input entered"
+		read -p "${prompt}" flavour
+	done
+	
+	prompt="Enter desktop environment: "
+	read -p "${prompt}" de
+
+	while [ -z ${de} ]; do
+		printf "%s\n" "No input entered"
+		read -p "${prompt}" de
+	done
+
+	menu_flavour="${flavour^}"
+	menu_de="${de^}"
+   fi
 
 printf "You selected %s\n\n" "${opt}"
 break
@@ -57,13 +73,13 @@ done
 menu_2 ()
 {
 
-prompt="Enter version number:"
+prompt="Enter version number: "
 
-read -p "${prompt} " version
+read -p "${prompt}" version
 
 while [ -z ${version} ]; do
-   printf '%s\n' "No input entered"
-   read -p "${prompt} " version
+   printf "%s\n" "No input entered"
+   read -p "${prompt}" version
 done
 
 printf "You entered %s\n\n" "${version}"
@@ -74,12 +90,12 @@ menu_3 ()
 printf "%s\n\n" "See details entered below:"
 
 printf "%s\n" "URL = ${url}"
-#printf "%s\n" "FILE = ${file}"
+#printf "%s\n" "FILE = ${file}" #debug
 printf "%s\n" "ISO = ${iso}"
 printf "%s\n" "FLAVOUR = ${flavour}"
-#printf "%s\n" "MENU FLAVOUR = ${menu_flavour}"
+#printf "%s\n" "MENU FLAVOUR = ${menu_flavour}" #debug
 printf "%s\n" "DESKTOP = ${de}"
-#printf "%s\n" "MENU DESKTOP = ${menu_de}"
+#printf "%s\n" "MENU DESKTOP = ${menu_de}" #debug
 printf "%s\n" "VERSION = ${version}"
 
 confirm	"Are these details correct?"  #yes no question
