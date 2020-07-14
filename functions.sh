@@ -4,15 +4,26 @@ confirm() {
 #
 # Prompts the user to enter Yes or No and returns 0/1.
 #
+# eg,
+#
+#    confirm "Would you like to proceed?"  #yes no question
+
+#   if [[ $? == "0" ]]; then  #if yes
+#      echo "You answered yes."
+#   else
+#      echo "You answered no."
+#   fi
+
    local prompt response
 
    if [ "$1" ]; then prompt="$1"; else prompt="Are you sure?"; fi
    prompt="$prompt [Y/n]"
-#  Loop forever until the user enters a valid response (Y/N or Yes/No).
+#  Loop forever until the user enters a valid response (Y/N or Yes/No). Default is yes.
    while true; do
       read -r -p "$prompt " response
       case "$response" in
          [Yy][Ee][Ss]|[Yy]|"") # Yes or Y (case-insensitive) or blank.
+         #[Yy][Ee][Ss]|[Yy]) # Uncomment this line and comment out the line ablove to remove default action.
          return 0
       ;;
          [Nn][Oo]|[Nn])  # No or N.
@@ -28,7 +39,7 @@ search() {
 #
 # syntax: search [<string>] file
 #
-# Searches a file fora given string returns 0 for true
+# Searches a file for a given string returns 0 for true
 
    local result
    result=$(grep -i "$1" "$2")
