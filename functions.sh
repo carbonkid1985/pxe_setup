@@ -18,7 +18,7 @@ confirm() {
 
    if [ "$1" ]; then prompt="$1"; else prompt="Are you sure?"; fi
    prompt="$prompt [Y/n]"
-#  Loop forever until the user enters a valid response (Y/N or Yes/No). Default is yes.
+#  Loop forever until the user enters a valid response (Y/N, y/n or Yes/No). Default is yes.
    while true; do
       read -r -p "$prompt " response
       case "$response" in
