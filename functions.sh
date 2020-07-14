@@ -23,7 +23,7 @@ confirm() {
       read -r -p "$prompt " response
       case "$response" in
          [Yy][Ee][Ss]|[Yy]|"") # Yes or Y (case-insensitive) or blank.
-         #[Yy][Ee][Ss]|[Yy]) # Uncomment this line and comment out the line ablove to remove default action.
+         #[Yy][Ee][Ss]|[Yy]) # Uncomment this line and comment out the line above to remove default action.
          return 0
       ;;
          [Nn][Oo]|[Nn])  # No or N.
