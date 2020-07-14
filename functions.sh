@@ -64,7 +64,7 @@ check_root() {
 # check_root
 #
 # if [[ $? != "0" ]]; then                                                      
-#    printf "%s\n" "You need to be root"
+#    echo "You need to be root"
 #    exit 0
 # fi
 
