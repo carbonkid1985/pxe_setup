@@ -76,3 +76,44 @@ else
 fi
 }
 
+output() {
+#
+# Useage output "string" [colour] {flash}
+#
+
+if [[ $3 == "flash" ]]; then
+        _blink=";5"
+else
+        _blink=""
+fi
+
+case $2 in
+        grey)
+                echo -e "\e[30;1${_blink}m${1}\e[0m"
+                ;;
+        red)
+                echo -e "\e[31;1${_blink}m${1}\e[0m"
+                ;;
+        green)
+                echo -e "\e[32;1${_blink}m$1\e[0m"
+                ;;
+        yellow)
+                echo -e "\e[33;1${_blink}m$1\e[0m"
+                ;;
+        blue)
+                echo -e "\e[34;1${_blink}m$1\e[0m"
+                ;;
+        magenta)
+                echo -e "\e[35;1${_blink}m$1\e[0m"
+                ;;
+        lightblue)
+                echo -e "\e[36;1${_blink}m$1\e[0m"
+                ;;
+        white)
+                echo -e "\e[37;1${_blink}m$1\e[0m"
+                ;;
+        *)
+                echo -e "\e[0mNo formatting option!"
+                ;;
+esac
+}

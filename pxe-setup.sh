@@ -13,15 +13,15 @@ pxelinux_dir="/usr/lib/PXELINUX/"
 
 filestructure_setup ()
 {
-   if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
-      confirm "Configure default menu structure?"
-      if [[ $? == "0" ]]; then # if yes
-         printf "%s\n" "Creating file structure"
-         mkdir -p ${tftp_dir}pxelinux.cfg
-         confirm "Create pxe menu conf file?"
-         if [[ $? == "0" ]]; then # if yes
-            printf "%s\n" "Creating pxe menu conf"
-            cat > "${tftp_dir}pxelinux.cfg/pxe.conf" << EOF
+     	if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
+	       	confirm "Configure default menu structure?"
+		if [[ $? == "0" ]]; then # if yes
+	       		printf "%s\n" "Creating file structure"
+		 	mkdir -p ${tftp_dir}pxelinux.cfg
+		 	confirm "Create pxe menu conf file?"
+		     	if [[ $? == "0" ]]; then # if yes
+		       		printf "%s\n" "Creating pxe menu conf"
+cat > "${tftp_dir}pxelinux.cfg/pxe.conf" << EOF
 MENU TITLE  Pavey's PXE Server
 MENU BACKGROUND pxelinux.cfg/pxe_splash.png
 NOESCAPE 1
@@ -37,11 +37,11 @@ menu color unsel		37;44		#c04f4e63 #00000000 std
 menu color help			37;40		#c0ffffff #00000000 std
 menu color border		51;153;255	#00ffffff #00000000 none
 EOF
-         fi
-         search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
-         if [[ $? != "0" ]]; then # if not present
-            printf "%s\n" "Creating default menu"
-	    cat > "${tftp_dir}pxelinux.cfg/default" << EOF
+			fi
+			search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
+			if [[ $? != "0" ]]; then # if not present
+				printf "%s\n" "Creating default menu"
+cat > "${tftp_dir}pxelinux.cfg/default" << EOF
 DEFAULT vesamenu.c32 
 TIMEOUT 50
 ONTIMEOUT BootLocal
@@ -56,41 +56,33 @@ LABEL BootLocal
 ENDTEXT
 
 EOF
-	 fi
-         confirm "Pull down background image?"
-         if [[ $? == "0" ]]; then # if yes
-            wget https://i.imgur.com/ktEA3WS.png -O /tmp/pxe_splash.png
-            if [[ -f "/tmp/pxe_splash.png" ]]; then
-               printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"   
-	       mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
-            else
-	       printf "%s\n" "Error downloading image"
-            fi
-         fi 
-      fi
-   fi
+			fi
+			confirm "Pull down background image?"
+			if [[ $? == "0" ]]; then # if yes
+				wget https://i.imgur.com/ktEA3WS.png -O /tmp/pxe_splash.png
+				if [[ -f "/tmp/pxe_splash.png" ]]; then
+					printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"  
+					mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
+				else
+					printf "%s\n" "Error downloading image"
+				fi
+			fi 
+		fi
+	fi
 }
 
-services_setup ()
-{
-   confirm "Install services?"
-   if [[ $? == "0" ]]; then # if yes
-      tftpd_setup
-      dhcpd_setup
-      nfs_setup
-      syslinux_setup
-      pxelinux_setup
-   fi
-}
+#services_setup ()
+#{
+#}
 
 tftpd_setup ()
 {
-   confirm "Install tftpd-hpa?"
-   if [[ $? == "0" ]]; then # if yes
-      printf "%s\n" "Installing TFTPD"
-      apt install tftpd-hpa
-      printf "%s\n" "Modifying ${tftpd_conf}"
-      cat > "${tftpd_conf}" << EOF
+	confirm "Install tftpd-hpa?"
+	if [[ $? == "0" ]]; then # if yes
+	       	printf "%s\n" "Installing TFTPD"
+		apt install tftpd-hpa
+		printf "%s\n" "Modifying ${tftpd_conf}"
+cat > "${tftpd_conf}" << EOF
 # /etc/default/tftpd-hpa
 
 TFTP_USERNAME="tftp"
@@ -98,17 +90,17 @@ TFTP_DIRECTORY="/data/tftpboot"
 TFTP_ADDRESS=":69"
 TFTP_OPTIONS="--secure --verbose"
 EOF
-   fi
+	fi
 }
 
 dhcpd_setup ()
 {
-   confirm "Install isc-dhcpd"
-   if [[ $? == "0" ]]; then # if yes
-      printf "%s\n" "Installing DHCPD"
-      apt install isc-dhcp-server
-      printf "%s\n" "Modifying ${dhcpd_conf}"
-      cat > "${dhcpd_conf}" << EOF
+	confirm "Install isc-dhcpd"
+	if [[ $? == "0" ]]; then # if yes
+		printf "%s\n" "Installing DHCPD"
+		apt install isc-dhcp-server
+		printf "%s\n" "Modifying ${dhcpd_conf}"
+cat > "${dhcpd_conf}" << EOF
 # dhcpd.conf
 
 default-lease-time 600;
@@ -128,47 +120,57 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
         filename "/lpxelinux.0";
 }
 EOF
-   fi
+	fi
 }
 
 dhcpd_setup ()
 {
-   confirm "Install nfs-kernel-server"
-   if [[ $? == "0" ]]; then # if yes
-      printf "%s\n" "Installing NFS"
-      apt install nfs-kernel-server
-   fi
+	confirm "Install nfs-kernel-server"
+	if [[ $? == "0" ]]; then # if yes
+		printf "%s\n" "Installing NFS"
+		apt install nfs-kernel-server
+	fi
 }
 syslinux_setup ()
 {
-   confirm "Install syslinux?"
-   if [[ $? == "0" ]]; then # if yes
-      printf "%s\n" "Installing syslinux"
-      apt install syslinux
-      printf "%s\n" "Copy required files from ${syslinux_dir}"
-      cp -a ${syslinux_dir}. ${tftp_dir}
-   fi
+	confirm "Install syslinux?"
+	if [[ $? == "0" ]]; then # if yes
+		printf "%s\n" "Installing syslinux"
+		apt install syslinux
+		printf "%s\n" "Copy required files from ${syslinux_dir}"
+		cp -a ${syslinux_dir}. ${tftp_dir}
+	fi
 }
 
 pxelinux_setup ()
 {
-   confirm "Install pxelinux?"
-   if [[ $? == "0" ]]; then # if yes
-      printf "%s\n" "Installing pxelinux"
-      apt install pxelinux
-      printf "%s\n" "Copy required files from ${pxelinux_dir}"
-      cp -a ${pxelinux_dir}lpxelinux.0 ${tftp_dir}
-   fi
+     	confirm "Install pxelinux?"
+      	if [[ $? == "0" ]]; then # if yes
+     		printf "%s\n" "Installing pxelinux"
+     		apt install pxelinux
+     		printf "%s\n" "Copy required files from ${pxelinux_dir}"
+     		cp -a ${pxelinux_dir}lpxelinux.0 ${tftp_dir}
+	fi
 }
 ## Start of script
 
 check_root
 
 if [[ $? != "0"  ]]; then # returns 0 if root
-   printf "%s\n" "You need to be root"
-   exit 0
+     	printf "%s\n" "You need to be root"
+	exit 0
 fi
 
-filestructure_setup
-services_setup
+confirm "Setup filestructure"
+if [[ $? == "0" ]];then
+	filestructure_setup
+fi
 
+confirm "Install services?"
+if [[ $? == "0" ]]; then # if yes
+  	tftpd_setup
+    	dhcpd_setup
+      	nfs_setup
+	syslinux_setup
+      	pxelinux_setup
+fi
