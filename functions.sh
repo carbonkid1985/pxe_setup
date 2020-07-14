@@ -7,7 +7,7 @@ confirm() {
 # eg,
 #
 #    confirm "Would you like to proceed?"  #yes no question
-
+#
 #   if [[ $? == "0" ]]; then  #if yes
 #      echo "You answered yes."
 #   else
@@ -67,7 +67,6 @@ check_root() {
 #    printf "%s\n" "You need to be root"
 #    exit 0
 # fi
-#
 
 if [[ $(/usr/bin/id -u) -ne 0 ]]; then
 #   echo "Not running as root"
