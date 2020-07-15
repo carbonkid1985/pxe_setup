@@ -16,11 +16,16 @@ confirm() {
 
    local prompt response
 
-   if [ "$1" ]; then prompt="$1"; else prompt="Are you sure?"; fi
+   if [ "$1" ]; then 
+	   prompt="$1"
+   else 
+	   prompt="Are you sure?"
+   fi
+
    prompt="$prompt [Y/n]"
 #  Loop forever until the user enters a valid response (Y/N, y/n or Yes/No). Default is yes.
    while true; do
-      read -r -p "$prompt " response
+      read -p "$prompt " response
       case "$response" in
          [Yy][Ee][Ss]|[Yy]|"") # Yes or Y (case-insensitive) or blank.
          #[Yy][Ee][Ss]|[Yy]) # Uncomment this line and comment out the line above to remove default action.

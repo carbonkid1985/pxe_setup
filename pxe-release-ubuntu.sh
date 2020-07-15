@@ -44,7 +44,7 @@ select_flavour ()
 			
 		if [[ ${flavour} == "other"  ]]; then
 			prompt="Enter ubuntu flavor: "
-			read -p "${prompt}" flavour
+			read -p "Enter ubuntu flavour" flavour
 				
 			while [ -z ${flavour}  ]; do
 				output "No input entered" red
@@ -243,12 +243,12 @@ if [[ ! -z $1 ]]; then
 		output "No local file found, URL assumed, ${url}." blue
 		file=/tmp/${url##*/}
 	fi
+	iso=${file##*/}
 else
 	output "Usage: pxe-release-ubuntu.sh [local iso file or URL]..." blue; exit 0
 fi
 
 # set parameter
-iso=${file##*/}
 
 select_flavour
 
