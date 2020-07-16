@@ -80,7 +80,7 @@ tftpd_setup ()
 	confirm "Install tftpd-hpa?"
 	if [[ $? == "0" ]]; then # if yes
 	       	printf "%s\n" "Installing TFTPD"
-		apt install tftpd-hpa
+		apt install -y tftpd-hpa
 		printf "%s\n" "Modifying ${tftpd_conf}"
 cat > "${tftpd_conf}" << EOF
 # /etc/default/tftpd-hpa
@@ -98,7 +98,7 @@ dhcpd_setup ()
 	confirm "Install isc-dhcpd"
 	if [[ $? == "0" ]]; then # if yes
 		printf "%s\n" "Installing DHCPD"
-		apt install isc-dhcp-server
+		apt install -y isc-dhcp-server
 		printf "%s\n" "Modifying ${dhcpd_conf}"
 cat > "${dhcpd_conf}" << EOF
 # dhcpd.conf
@@ -128,7 +128,7 @@ dhcpd_setup ()
 	confirm "Install nfs-kernel-server"
 	if [[ $? == "0" ]]; then # if yes
 		printf "%s\n" "Installing NFS"
-		apt install nfs-kernel-server
+		apt install -y nfs-kernel-server
 	fi
 }
 syslinux_setup ()
@@ -136,7 +136,7 @@ syslinux_setup ()
 	confirm "Install syslinux?"
 	if [[ $? == "0" ]]; then # if yes
 		printf "%s\n" "Installing syslinux"
-		apt install syslinux
+		apt install -y syslinux
 		printf "%s\n" "Copy required files from ${syslinux_dir}"
 		cp -a ${syslinux_dir}. ${tftp_dir}
 	fi
@@ -147,7 +147,7 @@ pxelinux_setup ()
      	confirm "Install pxelinux?"
       	if [[ $? == "0" ]]; then # if yes
      		printf "%s\n" "Installing pxelinux"
-     		apt install pxelinux
+     		apt install -y pxelinux
      		printf "%s\n" "Copy required files from ${pxelinux_dir}"
      		cp -a ${pxelinux_dir}lpxelinux.0 ${tftp_dir}
 	fi
