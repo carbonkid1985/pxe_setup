@@ -39,7 +39,7 @@ menu color border		51;153;255	#00ffffff #00000000 none
 EOF
 		fi
 		search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
-		if [[ $? != "0" ]]; then # if not present
+		if [[ -f "${tftp_dir}pxelinux.cfg/default" ]] || [[ $? != "0" ]]; then
 			printf "%s\n" "Creating default menu"
 cat > "${tftp_dir}pxelinux.cfg/default" << EOF
 DEFAULT vesamenu.c32 
