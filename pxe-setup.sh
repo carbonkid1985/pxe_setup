@@ -14,13 +14,13 @@ pxelinux_dir="/usr/lib/PXELINUX/"
 filestructure_setup ()
 {
      	if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
-	       	confirm "Configure default menu structure?"
+	       	confirm "Configure pxe menu conf file?"
 		if [[ $? == "0" ]]; then # if yes
-	       		printf "%s\n" "Creating file structure"
-		 	mkdir -p ${tftp_dir}pxelinux.cfg
-		 	confirm "Create pxe menu conf file?"
-		     	if [[ $? == "0" ]]; then # if yes
-		       		printf "%s\n" "Creating pxe menu conf"
+			if [[ ! -f "${tftp_dir}pxelinux.cfg/" ]]; then
+	       			printf "%s\n" "Creating file structure"
+		 		mkdir -p ${tftp_dir}pxelinux.cfg
+			fi
+		 	printf "%s\n" "Creating pxe menu conf"
 cat > "${tftp_dir}pxelinux.cfg/pxe.conf" << EOF
 MENU TITLE  Pavey's PXE Server
 MENU BACKGROUND pxelinux.cfg/pxe_splash.png
@@ -37,10 +37,10 @@ menu color unsel		37;44		#c04f4e63 #00000000 std
 menu color help			37;40		#c0ffffff #00000000 std
 menu color border		51;153;255	#00ffffff #00000000 none
 EOF
-			fi
-			search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
-			if [[ $? != "0" ]]; then # if not present
-				printf "%s\n" "Creating default menu"
+		fi
+		search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
+		if [[ $? != "0" ]]; then # if not present
+			printf "%s\n" "Creating default menu"
 cat > "${tftp_dir}pxelinux.cfg/default" << EOF
 DEFAULT vesamenu.c32 
 TIMEOUT 50
@@ -56,18 +56,17 @@ LABEL BootLocal
 ENDTEXT
 
 EOF
-			fi
-			confirm "Pull down background image?"
-			if [[ $? == "0" ]]; then # if yes
-				wget https://i.imgur.com/ktEA3WS.png -O /tmp/pxe_splash.png
-				if [[ -f "/tmp/pxe_splash.png" ]]; then
-					printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"  
-					mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
-				else
-					printf "%s\n" "Error downloading image"
-				fi
-			fi 
 		fi
+		confirm "Pull down background image?"
+		if [[ $? == "0" ]]; then # if yes
+			wget https://i.imgur.com/ktEA3WS.png -O /tmp/pxe_splash.png
+			if [[ -f "/tmp/pxe_splash.png" ]]; then
+				printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"  
+				mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
+			else
+				printf "%s\n" "Error downloading image"
+			fi
+		fi 
 	fi
 }
 
@@ -123,7 +122,7 @@ EOF
 	fi
 }
 
-dhcpd_setup ()
+nfs_setup ()
 {
 	confirm "Install nfs-kernel-server"
 	if [[ $? == "0" ]]; then # if yes
