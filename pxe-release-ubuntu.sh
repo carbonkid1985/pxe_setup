@@ -93,7 +93,8 @@ conf_details ()
 	confirm	"Are these details correct?"  #yes no question
 	if [[ $? != "0" ]]; then  #if anything but yes is returned
 		#./$0 ${arg1}
-		/$0 ${arg1}
+		#/$0 ${arg1}
+		$0 ${arg1}
 		exit 0
 	fi
 }
@@ -256,49 +257,87 @@ select_version
 
 conf_details
 
-if [ ! -z ${url} ]; then  ## if the image is a URL go ahead and attempt to download
+if [ ! -z ${url} ]; then  ## if the image is a URL
 	confirm "Would you like to download the iso?"  #yes no question
-	if [[ $? == "0" ]]; then  #if yes
-		output "Download started" blue
-		wget ${url} -O /tmp/${iso}
 
-      		if [[ ! -f ${file} ]]; then
-         		output "Unable to find downloaded file. Please check URL" red; exit 0
-      		fi
+	if [[ $? == "0" ]]; then  #if yes
+		dl_flag="0"
+	else
+		dl_flag="1"
    	fi
 fi
 
 confirm "would you like the filesystem created?"  #yes no question
 
+if [[ $? == "0" ]]; then #if yes
+	fs_flag="0"
+else
+	fs_flag="1"
+fi
+
+
+confirm "Would you like a PXE menu entry added?"  #yes no question
+
 if [[ $? == "0" ]]; then  #if yes
+	pxemenu_flag="0"
+else
+	pxemenu_flag="1"
+fi
+
+
+confirm "Would you like to add an entry to the exports file?"  #yes no question
+
+if [[ $? == "0" ]]; then  #if yes
+	exports_flag="0"
+else
+	exports_flag="1"
+fi
+
+	
+confirm "Would you like to delete the local iso?"  #yes no question
+
+if [[ $? == "0" ]]; then  #if yes
+	delete_flag="0"
+else
+	delete_flag="1"
+fi
+
+
+if [ ! -z ${url} ]; then
+	if [[ $dl_flag == "0" ]]; then  #if yes
+		output "Download started" blue
+		wget ${url} -O /tmp/${iso}
+
+		if [[ ! -f ${file} ]]; then
+       		output "Unable to find downloaded file. Please check URL" red; exit 0
+   		fi
+	fi
+fi
+
+if [[ $fs_flag == "0" ]]; then  #if yes
    	create_dir
    	mount_iso
    	copy_files
    	umount_iso
 fi
 
-confirm "Would you like a PXE menu entry added?"  #yes no question
-
-if [[ $? == "0" ]]; then  #if yes
+if [[ $pxemenu_flag == "0" ]]; then  #if yes
    	append_menu
 fi
 
-confirm "Would you like to add an entry to the exports file?"  #yes no question
-
-if [[ $? == "0" ]]; then  #if yes
+if [[ $exports_flag == "0" ]]; then  #if yes
    	append_exports
    	output "Restarting nfs server" blue
    	sudo systemctl restart nfs-kernel-server.service
 fi
 
-if [[ -f ${file} ]]; then
-	
-   	confirm "Would you like to delete the local iso?"  #yes no question
 
-   	if [[ $? == "0" ]]; then  #if yes
-      		output "Deleting local iso file ${file}" blue
-      		sudo rm ${file}
-   	fi
+if [[ -f ${file} ]]; then
+	if [[ $delete_flag == "0" ]]; then  #if yes
+		output "Deleting local iso file ${file}" blue
+     		sudo rm ${file}
+	fi
 fi
 
 output "Success! All operations completed" green
+exit 0
