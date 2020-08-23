@@ -46,14 +46,14 @@ select_flavour ()
 			prompt="Enter ubuntu flavor: "
 			read -p "Enter ubuntu flavour" flavour
 				
-			while [ -z ${flavour}  ]; do
+			while [[ -z ${flavour}  ]]; do
 				output "No input entered" red
 				read -p "${prompt}" flavour
 			done
 			prompt="Enter desktop environment: "
 			read -p "${prompt}" de
 
-			while [ -z ${de} ]; do
+			while [[ -z ${de} ]]; do
 				output "No input entered" red
 				read -p "${prompt}" de
 			done
@@ -63,6 +63,63 @@ select_flavour ()
 		output "You selected ${opt}" blue
 		break
 	done
+}
+
+dl_file ()
+{
+	if [[ ! -z ${url} ]]; then  ## if the image is a URL
+		confirm "Would you like to download the iso?"  #yes no question
+
+		if [[ $? == "0" ]]; then  #if yes
+			dl_flag="0"
+		else
+			dl_flag="1"
+   		fi
+	fi
+{
+
+fs_create ()
+{
+	confirm "would you like the filesystem created?"  #yes no question
+
+	if [[ $? == "0" ]]; then #if yes
+		fs_flag="0"
+	else
+		fs_flag="1"
+	fi
+}
+
+pxe_menu ()
+{
+	confirm "Would you like a PXE menu entry added?"  #yes no question
+
+	if [[ $? == "0" ]]; then  #if yes
+		pxemenu_flag="0"
+	else
+		pxemenu_flag="1"
+	fi
+}
+
+exports_add ()
+{
+	confirm "Would you like to add an entry to the exports file?"  #yes no question
+
+	if [[ $? == "0" ]]; then  #if yes
+		exports_flag="0"
+	else
+		exports_flag="1"
+	fi
+}
+
+rm_iso ()
+{
+	confirm "Would you like to delete the local iso?"  #yes no question
+
+	if [[ $? == "0" ]]; then  #if yes
+		delete_flag="0"
+	else
+		delete_flag="1"
+	fi
 }
 
 select_version ()
@@ -255,55 +312,19 @@ select_flavour
 
 select_version
 
+dl_file
+
+fs_create
+
+pxe_menu
+
+exports_add
+
+rm_iso
+
 conf_details
 
-if [ ! -z ${url} ]; then  ## if the image is a URL
-	confirm "Would you like to download the iso?"  #yes no question
-
-	if [[ $? == "0" ]]; then  #if yes
-		dl_flag="0"
-	else
-		dl_flag="1"
-   	fi
-fi
-
-confirm "would you like the filesystem created?"  #yes no question
-
-if [[ $? == "0" ]]; then #if yes
-	fs_flag="0"
-else
-	fs_flag="1"
-fi
-
-
-confirm "Would you like a PXE menu entry added?"  #yes no question
-
-if [[ $? == "0" ]]; then  #if yes
-	pxemenu_flag="0"
-else
-	pxemenu_flag="1"
-fi
-
-
-confirm "Would you like to add an entry to the exports file?"  #yes no question
-
-if [[ $? == "0" ]]; then  #if yes
-	exports_flag="0"
-else
-	exports_flag="1"
-fi
-
-	
-confirm "Would you like to delete the local iso?"  #yes no question
-
-if [[ $? == "0" ]]; then  #if yes
-	delete_flag="0"
-else
-	delete_flag="1"
-fi
-
-
-if [ ! -z ${url} ]; then
+if [[ ! -z ${url} ]]; then
 	if [[ ${dl_flag} == "0" ]]; then  #if yes
 		output "Download started" blue
 		wget ${url} -O /tmp/${iso}
