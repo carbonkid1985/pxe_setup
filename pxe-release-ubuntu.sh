@@ -76,7 +76,7 @@ dl_file ()
 			dl_flag="1"
    		fi
 	fi
-{
+}
 
 fs_create ()
 {
