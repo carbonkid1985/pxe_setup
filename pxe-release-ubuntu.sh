@@ -304,7 +304,7 @@ fi
 
 
 if [ ! -z ${url} ]; then
-	if [[ $dl_flag == "0" ]]; then  #if yes
+	if [[ ${dl_flag} == "0" ]]; then  #if yes
 		output "Download started" blue
 		wget ${url} -O /tmp/${iso}
 
@@ -314,18 +314,18 @@ if [ ! -z ${url} ]; then
 	fi
 fi
 
-if [[ $fs_flag == "0" ]]; then  #if yes
+if [[ ${fs_flag} == "0" ]]; then  #if yes
    	create_dir
    	mount_iso
    	copy_files
    	umount_iso
 fi
 
-if [[ $pxemenu_flag == "0" ]]; then  #if yes
+if [[ ${pxemenu_flag} == "0" ]]; then  #if yes
    	append_menu
 fi
 
-if [[ $exports_flag == "0" ]]; then  #if yes
+if [[ ${exports_flag} == "0" ]]; then  #if yes
    	append_exports
    	output "Restarting nfs server" blue
    	sudo systemctl restart nfs-kernel-server.service
@@ -333,7 +333,7 @@ fi
 
 
 if [[ -f ${file} ]]; then
-	if [[ $delete_flag == "0" ]]; then  #if yes
+	if [[ ${delete_flag} == "0" ]]; then  #if yes
 		output "Deleting local iso file ${file}" blue
      		sudo rm ${file}
 	fi
