@@ -318,7 +318,9 @@ MENU END
 
 EOF
 
-   	fi
+	else
+		output "WARNING! Distro menu entry already exists. Skipping" yellow 
+	fi
    
 	if [[ ! -f "${menu_str}" ]]; then
 		output "Creating flavour menu" blue
@@ -348,7 +350,9 @@ ENDTEXT
 
 EOF
 
-   	fi
+	else
+		output "WARNING! Flavour menu entry already exists. Skipping" yellow 
+	fi
 }
 
 append_exports ()
@@ -357,6 +361,8 @@ append_exports ()
 	if [[ $? != "0" ]]; then
 		output "Adding entry to exports" blue
 		echo "${ubuntu_dir}/${version}/x64/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
+	else
+		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi
 	}
 
