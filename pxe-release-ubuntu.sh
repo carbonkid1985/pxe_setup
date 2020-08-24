@@ -14,6 +14,48 @@ default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
 
+ensure_root ()
+{
+	check_root
+
+	if [[ $? != "0" ]]; then  #Checks for root
+		output "You need to have root privilages to run this script!" red
+		exit 0
+	fi
+}
+
+check_arg ()
+{
+	if [[ ! -z $1 ]]; then
+		arg=$1
+	
+		if [[ -f ${arg} ]]; then
+			file=${arg}
+			ext=${file##*.}
+			if [[ ${ext} == "iso" ]]; then
+				output "Local file, ${file} found." blue
+			else
+				output "File specified does not appear to be an iso disk image." red
+				confirm "Would you like to proceed."  #yes no question
+
+				if [[ $? == "1" ]]; then  #if no
+   				exit 0
+				fi	
+			fi
+			url_file="1"
+		else
+			url=${arg}
+			output "No local file found, URL assumed, ${url}." blue
+			file=/tmp/${url##*/}
+			url_file="0"
+		fi
+		iso=${file##*/}
+	else
+		output "ERROR! Usage: pxe-release-ubuntu.sh [local iso file or URL]..." red
+		exit 0
+	fi
+}
+
 select_flavour ()
 {
 	title="Select Ubuntu flavour"
@@ -44,12 +86,13 @@ select_flavour ()
 			
 		if [[ ${flavour} == "other"  ]]; then
 			prompt="Enter ubuntu flavor: "
-			read -p "Enter ubuntu flavour" flavour
+			read -p "${prompt}" flavour
 				
 			while [[ -z ${flavour}  ]]; do
 				output "No input entered" red
 				read -p "${prompt}" flavour
 			done
+
 			prompt="Enter desktop environment: "
 			read -p "${prompt}" de
 
@@ -60,9 +103,22 @@ select_flavour ()
 			menu_flavour="${flavour^}"
 			menu_de="${de^}"
 		fi
-		output "You selected ${opt}" blue
+		output "You entered: ${flavour^}" blue
 		break
 	done
+}
+
+select_version ()
+{
+	prompt="Enter version number: "
+	read -p "${prompt}" version
+	
+	while [ -z ${version} ]; do
+		output "No input entered" red
+		read -p "${prompt}" version
+	done
+	
+	output "You entered: ${version}" blue
 }
 
 dl_file ()
@@ -76,7 +132,7 @@ dl_file ()
 			dl_flag="1"
    		fi
 	fi
-{
+}
 
 fs_create ()
 {
@@ -122,23 +178,15 @@ rm_iso ()
 	fi
 }
 
-select_version ()
-{
-	prompt="Enter version number: "
-	read -p "${prompt}" version
-	
-	while [ -z ${version} ]; do
-		output "No input entered" red
-		read -p "${prompt}" version
-	done
-	
-	output "You entered ${version}" blue
-}
-
 conf_details ()
 {
-	output "See details entered below:\n" blue
-	output "URL = ${url}" green
+	output "See details entered below:" blue
+	if [[ ${url_file} == "0" ]]; then
+		output "URL = ${url}" green
+	else
+		output "FILE = ${file}" green
+	fi
+	#output "URL = ${url}" green
 	#output "FILE = ${file}" green #debug
 	output "ISO = ${iso}" green
 	output "FLAVOUR = ${flavour}" green
@@ -146,12 +194,49 @@ conf_details ()
 	output "DESKTOP = ${de}" green
 	#output "MENU DESKTOP = ${menu_de}" green #debug
 	output "VERSION = ${version}" green
+	
+	if [[ ! -z ${url} ]]; then  ## if the image is a URL
+		if [[ ${dl_flag} == "0" ]]; then
+			msg="true"
+		else
+			msg="false"
+		fi
+		output "DOWNLOAD ISO = ${msg}" green
+	fi
 
-	confirm	"Are these details correct?"  #yes no question
+	if [[ ${fs_flag} == "0" ]]; then
+		msg="true"
+	else
+		msg="false"
+	fi
+	output "CREATE & POPULATE FILE STRUCTURE = ${msg}" green
+
+	if [[ ${pxemenu_flag} == "0" ]]; then
+		msg="true"
+	else
+		msg="false"
+	fi
+	output "ADD ENTRY TO PXE MENU = ${msg}" green
+
+	if [[ ${exports_flag} == "0" ]]; then
+		msg="true"
+	else
+		msg="false"
+	fi
+	output "ADD ENTRY TO NFS EXPORTS FILE = ${msg}" green
+
+	if [[ ${delete_flag} == "0" ]]; then
+		msg="true"
+	else
+		msg="false"
+	fi
+	output "DELETE ISO FILE UPON COMPLETION = ${msg}" green
+
+	confirm	"Would you like to proceed? press 'Y' to initiate the unattended release of the PXE image, press 'N' to edit any details:"  #yes no question
 	if [[ $? != "0" ]]; then  #if anything but yes is returned
-		#./$0 ${arg1}
-		#/$0 ${arg1}
-		$0 ${arg1}
+		#./$0 ${arg}
+		#/$0 ${arg}
+		$0 ${arg}
 		exit 0
 	fi
 }
@@ -250,7 +335,7 @@ EOF
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
-
+		
 cat >> "${ubuntu_dir}/desktop.menu" << EOF
 LABEL ${rand}
 	MENU LABEL ${menu_flavour} ${version} x64 ${menu_de}
@@ -268,60 +353,27 @@ EOF
 
 append_exports ()
 {
-	output "Adding entry to exports" blue
-	echo "${ubuntu_dir}/${version}/x64/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
-}
+	search  "${ubuntu_dir}/${version}/x64/${de}/" "/etc/exports"
+	if [[ $? != "0" ]]; then
+		output "Adding entry to exports" blue
+		echo "${ubuntu_dir}/${version}/x64/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
+	fi
+	}
 
 ### Start of script ###
 
-check_root
-
-if [[ $? != "0" ]]; then  #Checks for root
-	output "You need to have root privilages to run this script!" red; exit 0
-fi
-
-if [[ ! -z $1 ]]; then
-	arg1=$1
-	
-	if [[ -f ${arg1} ]]; then
-		file=${arg1}
-		ext=${file##*.}
-		if [[ ${ext} == "iso" ]]; then
-			output "Local file, ${file} found." blue
-		else
-			output "File specified does not appear to be an iso disk image." red
-			confirm "Would you like to proceed."  #yes no question
-
-			if [[ $? == "1" ]]; then  #if no
-   				exit 0
-			fi	
-		fi
-	else
-		url=${arg1}
-		output "No local file found, URL assumed, ${url}." blue
-		file=/tmp/${url##*/}
-	fi
-	iso=${file##*/}
-else
-	output "Usage: pxe-release-ubuntu.sh [local iso file or URL]..." blue; exit 0
-fi
+ensure_root
+check_arg $1
 
 # set parameter
 
 select_flavour
-
 select_version
-
 dl_file
-
 fs_create
-
 pxe_menu
-
 exports_add
-
 rm_iso
-
 conf_details
 
 if [[ ! -z ${url} ]]; then
@@ -351,7 +403,6 @@ if [[ ${exports_flag} == "0" ]]; then  #if yes
    	output "Restarting nfs server" blue
    	sudo systemctl restart nfs-kernel-server.service
 fi
-
 
 if [[ -f ${file} ]]; then
 	if [[ ${delete_flag} == "0" ]]; then  #if yes
