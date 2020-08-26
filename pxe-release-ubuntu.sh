@@ -2,7 +2,7 @@
 
 source functions.sh
 
-## global vars
+## global vars ##
 
 nfs_server_ip=192.168.0.2
 tftp_dir="/data/tftpboot"
