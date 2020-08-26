@@ -4,7 +4,7 @@ source functions.sh
 
 ## global vars ##
 
-nfs_server_ip=192.168.0.2
+nfs_server_ip="192.168.0.2"
 tftp_dir="/data/tftpboot"
 mount_point="/mnt"
 ubuntu_dir="${tftp_dir}/ubuntu"
