@@ -246,7 +246,7 @@ conf_details ()
 create_dir ()
 {
 	output "Creating path ${desktop_dir}/${version}/x64/${de}" blue
-	sudo mkdir -p "${desktop_dir}/${version}/op/x64/${de}"
+	sudo mkdir -p "${desktop_dir}/${version}/x64/${de}"
 }
 
 mount_iso ()
