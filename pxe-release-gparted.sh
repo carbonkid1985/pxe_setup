@@ -59,18 +59,29 @@ check_arg ()
 
 select_flavour ()
 {
+
+title="Please select architecture"
+prompt="Pick an option:"
+options=("x86" 
+	"x64")
+
+	output "${title}" green
+        PS3="${prompt} "
+        select opt in "${options[@]}" "Quit"; do
+                case "${REPLY}" in
+                        1) arch="x86"; menu_arch="32bit";;
+                        2) arch="x64"; menu_arch="64bit";;
+                        $(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
+                        *) output "Invalid option. Try another one." red;continue;;
+
+                esac
+		break
+        done
+
 	flavour="gparted"
 	de="fluxbox"
 	menu_flavour="${flavour^}"
 	menu_de="${de^}"
-
-	confirm "x64?"  #yes no question
-
-        if [[ $? == "0" ]]; then #if yes
-                arch="x64"
-        else
-                arch="x86"
-        fi
 }
 
 select_version ()
@@ -299,7 +310,7 @@ EOF
 
    	fi  
 	
-	search "menu label ${menu_flavour} ${version} ${arch}" "${type_menu_path}"
+	search "menu label ${menu_flavour} ${version} ${menu_arch}" "${type_menu_path}"
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
@@ -307,12 +318,12 @@ EOF
 cat >> "${type_menu_path}" << EOF
 
 LABEL ${rand}
-        MENU LABEL ${menu_flavour} ${version} ${arch}
+        MENU LABEL ${menu_flavour} ${version} ${menu_arch}
         KERNEL /tools/gparted/${version}/${arch}/${de}/live/vmlinuz
         INITRD /tools/gparted/${version}/${arch}/${de}/live/initrd.img
 	APPEND boot=live config components locales=gb_GB.UTF-8 keyboard-layouts=gb gl_batch union=overlay username=user splash noswap noeject ip=dhcp vga=788 netboot=nfs nfsroot=${nfs_server_ip}:${gparted_dir}/${version}/${arch}/${de}
 	TEXT HELP
-        Boot ${menu_flavour} live ${version} ${arch}
+        Boot ${menu_flavour} live ${version} ${menu_arch}
 ENDTEXT
 
 EOF
