@@ -340,7 +340,7 @@ EOF
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
 		
-cat >> "${desktop_dir}/desktop.menu" << EOF
+cat >> "${type_menu_path}" << EOF
 LABEL ${rand}
 	MENU LABEL ${menu_flavour} ${version} x64 ${menu_de}
 	KERNEL /ubuntu/desktop/${version}/x64/${de}/casper/vmlinuz
