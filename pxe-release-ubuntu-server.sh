@@ -334,7 +334,7 @@ EOF
 
 		if [[ ${flavour} == "netboot" ]]; then
 
-cat >> "${server_dir}/server.menu" << EOF
+cat >> "${type_menu_path}" << EOF
 LABEL ${rand}
 	MENU LABEL Ubuntu ${version} Server x64 ${menu_flavour}
         KERNEL /ubuntu/server/${version}/x64/${de}/linux
