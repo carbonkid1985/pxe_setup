@@ -329,7 +329,7 @@ EOF
 #		elif [[ ${flavour} == "full_iso" ]]; then
 		else
 		
-cat >> "${distro_dir}/server.menu" << EOF
+cat >> "${distro_menu_path}" << EOF
 LABEL ${rand}
         MENU LABEL Ubuntu ${version} Server x64 ${menu_flavour}
         KERNEL /ubuntu/server/${version}/x64/${de}/casper/vmlinuz
