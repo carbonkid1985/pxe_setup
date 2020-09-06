@@ -7,16 +7,16 @@ source functions.sh
 nfs_server_ip="192.168.0.2"
 tftp_dir="/data/tftpboot"
 mount_point="/mnt"
-ubuntu_dir="${tftp_dir}/ubuntu"
-desktop_dir="${ubuntu_dir}/desktop"
-server_dir="${ubuntu_dir}/server"
-menu_path="${ubuntu_dir}/ubuntu.menu"
+distro_dir="${tftp_dir}/ubuntu"
+desktop_dir="${distro_dir}/desktop"
+server_dir="${distro_dir}/server"
+distro_menu_path="${distro_dir}/ubuntu.menu"
 type_menu_path="${desktop_dir}/desktop.menu"
 default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
 
-ensure_root ()
+ensure_root () 
 {
 	check_root
 
@@ -290,21 +290,21 @@ MENU END
 EOF
 
 	fi
-	if [[ ! -f "${menu_path}" ]]; then
+	if [[ ! -f "${distro_menu_path}" ]]; then
 		output "Creating disto menu" blue
 
-cat > "${menu_path}" << EOF
+cat > "${distro_menu_path}" << EOF
 # initrd path is relative to pxe root (/tftpboot)
 # nfsroot ip is pxe server's address
 
 EOF
 
 	fi
-	search "menu include ubuntu/desktop/desktop.menu" "${menu_path}"
+	search "menu include ubuntu/desktop/desktop.menu" "${distro_menu_path}"
 	if [[ $? != "0" ]]; then 
 		output "Adding distro menu entry" blue
 
-cat >> "${menu_path}" << EOF
+cat >> "${distro_menu_path}" << EOF
 
 MENU BEGIN Desktop
 MENU TITLE Desktop
