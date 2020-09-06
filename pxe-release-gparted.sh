@@ -7,10 +7,10 @@ source functions.sh
 nfs_server_ip="192.168.0.2"
 tftp_dir="/data/tftpboot"
 mount_point="/mnt"
-tools_dir="${tftp_dir}/tools"
-gparted_dir="${tools_dir}/gparted"
-menu_path="${tools_dir}/tools.menu"
-type_menu_path="${gparted_dir}/gparted.menu"
+sub_dir="${tftp_dir}/tools"
+distro_dir="${sub_dir}/gparted"
+sub_menu_path="${sub_dir}/tools.menu"
+distro_menu_path="${distro_dir}/gparted.menu"
 default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
@@ -220,8 +220,8 @@ conf_details ()
 
 create_dir ()
 {
-	output "Creating path ${gparted_dir}/${version}/${arch}/${de}" blue
-	sudo mkdir -p "${gparted_dir}/${version}/${arch}/${de}"
+	output "Creating path ${distro_dir}/${version}/${arch}/${de}" blue
+	sudo mkdir -p "${distro_dir}/${version}/${arch}/${de}"
 }
 
 mount_iso ()
@@ -233,7 +233,7 @@ mount_iso ()
 copy_files ()
 {
 	output "Copying loop files" blue
-	sudo cp -a ${mount_point}/. "${gparted_dir}/${version}/${arch}/${de}"
+	sudo cp -a ${mount_point}/. "${distro_dir}/${version}/${arch}/${de}"
 }
 
 umount_iso ()
@@ -265,21 +265,21 @@ MENU END
 EOF
 
 	fi
-	if [[ ! -f "${menu_path}" ]]; then
+	if [[ ! -f "${sub_menu_path}" ]]; then
 		output "Creating disto menu" blue
 
-cat > "${menu_path}" << EOF
+cat > "${sub_menu_path}" << EOF
 # initrd path is relative to pxe root (/tftpboot)
 # nfsroot ip is pxe server's address
 
 EOF
 
 	fi
-	search "menu include tools/gparted/gparted.menu" "${menu_path}"
+	search "menu include tools/gparted/gparted.menu" "${sub_menu_path}"
 	if [[ $? != "0" ]]; then 
 		output "Adding distro menu entry" blue
 
-cat >> "${menu_path}" << EOF
+cat >> "${sub_menu_path}" << EOF
 
 MENU BEGIN Gparted
 MENU TITLE Gparted
@@ -299,10 +299,10 @@ EOF
 		output "WARNING! Distro menu entry already exists. Skipping" yellow 
 	fi
    
-	if [[ ! -f "${type_menu_path}" ]]; then
+	if [[ ! -f "${distro_menu_path}" ]]; then
 		output "Creating flavour menu" blue
 
-cat > "${type_menu_path}" << EOF
+cat > "${distro_menu_path}" << EOF
 # initrd path is relative to pxe root (/data/tftpboot)
 # nfsroot ip is pxe server's address
 
@@ -310,18 +310,18 @@ EOF
 
    	fi  
 	
-	search "menu label ${menu_flavour} ${version} ${menu_arch}" "${type_menu_path}"
+	search "menu label ${menu_flavour} ${version} ${menu_arch}" "${distro_menu_path}"
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
 		
-cat >> "${type_menu_path}" << EOF
+cat >> "${distro_menu_path}" << EOF
 
 LABEL ${rand}
         MENU LABEL ${menu_flavour} ${version} ${menu_arch}
         KERNEL /tools/gparted/${version}/${arch}/${de}/live/vmlinuz
         INITRD /tools/gparted/${version}/${arch}/${de}/live/initrd.img
-	APPEND boot=live config components locales=gb_GB.UTF-8 keyboard-layouts=gb gl_batch union=overlay username=user splash noswap noeject ip=dhcp vga=788 netboot=nfs nfsroot=${nfs_server_ip}:${gparted_dir}/${version}/${arch}/${de}
+	APPEND boot=live config components locales=gb_GB.UTF-8 keyboard-layouts=gb gl_batch union=overlay username=user splash noswap noeject ip=dhcp vga=788 netboot=nfs nfsroot=${nfs_server_ip}:${distro_dir}/${version}/${arch}/${de}
 	TEXT HELP
         Boot ${menu_flavour} live ${version} ${menu_arch}
 ENDTEXT
@@ -335,10 +335,10 @@ EOF
 
 append_exports ()
 {
-	search  "${gparted_dir}/${version}/${arch}/${de}/" "/etc/exports"
+	search  "${distro_dir}/${version}/${arch}/${de}/" "/etc/exports"
 	if [[ $? != "0" ]]; then
 		output "Adding entry to exports" blue
-		echo "${gparted_dir}/${version}/${arch}/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
+		echo "${distro_dir}/${version}/${arch}/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
 	else
 		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi

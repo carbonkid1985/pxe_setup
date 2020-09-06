@@ -7,11 +7,10 @@ source functions.sh
 nfs_server_ip="192.168.0.2"
 tftp_dir="/data/tftpboot"
 mount_point="/mnt"
-distro_dir="${tftp_dir}/ubuntu"
-desktop_dir="${distro_dir}/desktop"
-server_dir="${distro_dir}/server"
-distro_menu_path="${distro_dir}/ubuntu.menu"
-type_menu_path="${server_dir}/server.menu"
+sub_dir="${tftp_dir}/ubuntu"
+distro_dir="${sub_dir}/server"
+sub_menu_path="${sub_dir}/ubuntu.menu"
+distro_menu_path="${distro_dir}/server.menu"
 default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
@@ -78,25 +77,6 @@ select_flavour ()
 	
 		esac
 			
-#		if [[ ${flavour} == "other"  ]]; then
-#			prompt="Enter ubuntu flavor: "
-#			read -p "${prompt}" flavour
-#				
-#			while [[ -z ${flavour}  ]]; do
-#				output "No input entered" red
-#				read -p "${prompt}" flavour
-#			done
-#
-#			prompt="Enter desktop environment: "
-#			read -p "${prompt}" de
-#
-#			while [[ -z ${de} ]]; do
-#				output "No input entered" red
-#				read -p "${prompt}" de
-#			done
-#			menu_flavour="${flavour^}"
-#			menu_de="${de^}"
-#		fi
 		output "You entered: ${flavour^}" blue
 		break
 	done
@@ -237,8 +217,8 @@ conf_details ()
 
 create_dir ()
 {
-	output "Creating path ${server_dir}/${version}/x64/${de}" blue
-	sudo mkdir -p "${server_dir}/${version}/x64/${de}"
+	output "Creating path ${distro_dir}/${version}/x64/${de}" blue
+	sudo mkdir -p "${distro_dir}/${version}/x64/${de}"
 }
 
 mount_iso ()
@@ -250,7 +230,7 @@ mount_iso ()
 copy_files ()
 {
 	output "Copying loop files" blue
-	sudo cp -a ${mount_point}/. "${server_dir}/${version}/x64/${de}"
+	sudo cp -a ${mount_point}/. "${distro_dir}/${version}/x64/${de}"
 }
 
 umount_iso ()
@@ -282,21 +262,21 @@ MENU END
 EOF
 
 	fi
-	if [[ ! -f "${distro_menu_path}" ]]; then
+	if [[ ! -f "${sub_menu_path}" ]]; then
 		output "Creating disto menu" blue
 
-cat > "${distro_menu_path}" << EOF
+cat > "${sub_menu_path}" << EOF
 # initrd path is relative to pxe root (/tftpboot)
 # nfsroot ip is pxe server's address
 
 EOF
 
 	fi
-	search "menu include ubuntu/server/server.menu" "${distro_menu_path}"
+	search "menu include ubuntu/server/server.menu" "${sub_menu_path}"
 	if [[ $? != "0" ]]; then 
 		output "Adding distro menu entry" blue
 
-cat >> "${distro_menu_path}" << EOF
+cat >> "${sub_menu_path}" << EOF
 
 MENU BEGIN Desktop
 MENU TITLE Desktop
@@ -316,10 +296,10 @@ EOF
 		output "WARNING! Distro menu entry already exists. Skipping" yellow 
 	fi
    
-	if [[ ! -f "${type_menu_path}" ]]; then
+	if [[ ! -f "${distro_menu_path}" ]]; then
 		output "Creating flavour menu" blue
 
-cat > "${type_menu_path}" << EOF
+cat > "${distro_menu_path}" << EOF
 # initrd path is relative to pxe root (/data/tftpboot)
 # nfsroot ip is pxe server's address
 
@@ -327,14 +307,14 @@ EOF
 
    	fi  
 	
-	search "menu label ${menu_flavour} ${version} x64 ${menu_de}" "${type_menu_path}"
+	search "menu label ${menu_flavour} ${version} x64 ${menu_de}" "${distro_menu_path}"
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
 
 		if [[ ${flavour} == "netboot" ]]; then
 
-cat >> "${type_menu_path}" << EOF
+cat >> "${distro_menu_path}" << EOF
 LABEL ${rand}
 	MENU LABEL Ubuntu ${version} Server x64 ${menu_flavour}
         KERNEL /ubuntu/server/${version}/x64/${de}/linux
@@ -349,12 +329,12 @@ EOF
 #		elif [[ ${flavour} == "full_iso" ]]; then
 		else
 		
-cat >> "${server_dir}/server.menu" << EOF
+cat >> "${distro_dir}/server.menu" << EOF
 LABEL ${rand}
         MENU LABEL Ubuntu ${version} Server x64 ${menu_flavour}
         KERNEL /ubuntu/server/${version}/x64/${de}/casper/vmlinuz
         INITRD /ubuntu/server/${version}/x64/${de}/casper/initrd
-        APPEND ip=dhcp boot=casper text vga=normal netboot=nfs nfsroot=${nfs_server_ip}:${server_dir}/${version}/x64/${de} locale=en_GB.UTF-8 keyboard-configuration/layout=gb splash
+        APPEND ip=dhcp boot=casper text vga=normal netboot=nfs nfsroot=${nfs_server_ip}:${distro_dir}/${version}/x64/${de} locale=en_GB.UTF-8 keyboard-configuration/layout=gb splash
         TEXT HELP
 	Boot Ubuntu ${version} Server x64 ${menu_flavour}
 ENDTEXT
@@ -368,10 +348,10 @@ EOF
 
 append_exports ()
 {
-	search  "${server_dir}/${version}/x64/${de}/" "/etc/exports"
+	search  "${distro_dir}/${version}/x64/${de}/" "/etc/exports"
 	if [[ $? != "0" ]]; then
 		output "Adding entry to exports" blue
-		echo "${server_dir}/${version}/x64/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
+		echo "${distro_dir}/${version}/x64/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
 	else
 		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi
