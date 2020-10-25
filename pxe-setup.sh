@@ -127,7 +127,7 @@ nfs_setup ()
 {
 	confirm "Install nfs-kernel-server"
 	if [[ $? == "0" ]]; then # if yes
-		printf "%s\n" "Installing NFS"
+		output "Installing NFS" green
 		apt install -y nfs-kernel-server
 	fi
 }
@@ -135,9 +135,9 @@ syslinux_setup ()
 {
 	confirm "Install syslinux?"
 	if [[ $? == "0" ]]; then # if yes
-		printf "%s\n" "Installing syslinux"
+		output "Installing syslinux" green
 		apt install -y syslinux
-		printf "%s\n" "Copy required files from ${syslinux_dir}"
+		output "Copy required files from ${syslinux_dir}" green
 		cp -a ${syslinux_dir}. ${tftp_dir}
 	fi
 }
@@ -146,9 +146,9 @@ pxelinux_setup ()
 {
      	confirm "Install pxelinux?"
       	if [[ $? == "0" ]]; then # if yes
-     		printf "%s\n" "Installing pxelinux"
+     		output "Installing pxelinux" green
      		apt install -y pxelinux
-     		printf "%s\n" "Copy required files from ${pxelinux_dir}"
+     		output "Copy required files from ${pxelinux_dir}" green
      		cp -a ${pxelinux_dir}lpxelinux.0 ${tftp_dir}
 	fi
 }
@@ -157,7 +157,7 @@ pxelinux_setup ()
 check_root
 
 if [[ $? != "0"  ]]; then # returns 0 if root
-     	printf "%s\n" "You need to be root"
+     	output "You need to be root" red
 	exit 0
 fi
 
