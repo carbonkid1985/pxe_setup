@@ -9,6 +9,7 @@ dhcpd_conf="/etc/dhcp/dhcpd.conf"
 tftp_dir="/data/tftpboot/"
 syslinux_dir="/usr/lib/syslinux/modules/bios/"
 pxelinux_dir="/usr/lib/PXELINUX/"
+splash_image="https://i.imgur.com/ktEA3WS.png"
 #mount_point="/mnt"
 
 filestructure_setup ()
@@ -59,10 +60,10 @@ EOF
 		fi
 		confirm "Pull down background image?"
 		if [[ $? == "0" ]]; then # if yes
-			wget https://i.imgur.com/ktEA3WS.png -O /tmp/pxe_splash.png
+			wget $splash_image -O /tmp/pxe_splash.png
 			if [[ -f "/tmp/pxe_splash.png" ]]; then
-				printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"  
 				mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
+				printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"  
 			else
 				printf "%s\n" "Error downloading image"
 			fi
