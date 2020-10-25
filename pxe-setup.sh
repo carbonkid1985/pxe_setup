@@ -18,10 +18,10 @@ filestructure_setup ()
 	       	confirm "Configure pxe menu conf file?"
 		if [[ $? == "0" ]]; then # if yes
 			if [[ ! -f "${tftp_dir}pxelinux.cfg/" ]]; then
-	       			printf "%s\n" "Creating file structure"
+	       			output "Creating file structure" green
 		 		mkdir -p ${tftp_dir}pxelinux.cfg
 			fi
-		 	printf "%s\n" "Creating pxe menu conf"
+		 	output "Creating pxe menu conf" green
 cat > "${tftp_dir}pxelinux.cfg/pxe.conf" << EOF
 MENU TITLE  Pavey's PXE Server
 MENU BACKGROUND pxelinux.cfg/pxe_splash.png
@@ -41,7 +41,7 @@ EOF
 		fi
 		search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
 		if [[ -f "${tftp_dir}pxelinux.cfg/default" ]] || [[ $? != "0" ]]; then
-			printf "%s\n" "Creating default menu"
+			output "Creating default menu" green
 cat > "${tftp_dir}pxelinux.cfg/default" << EOF
 DEFAULT vesamenu.c32 
 TIMEOUT 50
@@ -63,9 +63,9 @@ EOF
 			wget $splash_image -O /tmp/pxe_splash.png
 			if [[ -f "/tmp/pxe_splash.png" ]]; then
 				mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
-				printf "%s\n" "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png"  
+				output "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png" green
 			else
-				printf "%s\n" "Error downloading image"
+				output "Error downloading image" red
 			fi
 		fi 
 	fi
@@ -79,9 +79,9 @@ tftpd_setup ()
 {
 	confirm "Install tftpd-hpa?"
 	if [[ $? == "0" ]]; then # if yes
-	       	printf "%s\n" "Installing TFTPD"
+	       	output "Installing TFTPD" green
 		apt install -y tftpd-hpa
-		printf "%s\n" "Modifying ${tftpd_conf}"
+		output "Modifying ${tftpd_conf}" green
 cat > "${tftpd_conf}" << EOF
 # /etc/default/tftpd-hpa
 
@@ -97,9 +97,9 @@ dhcpd_setup ()
 {
 	confirm "Install isc-dhcpd"
 	if [[ $? == "0" ]]; then # if yes
-		printf "%s\n" "Installing DHCPD"
+		output "Installing DHCPD" green
 		apt install -y isc-dhcp-server
-		printf "%s\n" "Modifying ${dhcpd_conf}"
+		output "Modifying ${dhcpd_conf}" green
 cat > "${dhcpd_conf}" << EOF
 # dhcpd.conf
 
