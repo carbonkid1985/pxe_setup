@@ -154,7 +154,7 @@ pxelinux_setup ()
 }
 ## Start of script
 
-sudo =v
+sudo -v
 
 #check_root
 
