@@ -12,8 +12,16 @@ pxelinux_dir="/usr/lib/PXELINUX/"
 splash_image="https://i.imgur.com/ktEA3WS.png"
 #mount_point="/mnt"
 
-filestructure_setup ()
-{
+ensure_root (){
+	check_root
+
+	if [[ $? != "0"  ]]; then # returns 0 if root
+     		output "You need to be root" red
+		exit 0
+	fi
+}
+
+filestructure_setup (){
      	if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
 	       	confirm "Configure pxe menu conf file?"
 		if [[ $? == "0" ]]; then # if yes
@@ -75,8 +83,7 @@ EOF
 #{
 #}
 
-tftpd_setup ()
-{
+tftpd_setup (){
 	confirm "Install tftpd-hpa?"
 	if [[ $? == "0" ]]; then # if yes
 	       	output "Installing TFTPD" green
@@ -93,8 +100,7 @@ EOF
 	fi
 }
 
-dhcpd_setup ()
-{
+dhcpd_setup (){
 	confirm "Install isc-dhcpd"
 	if [[ $? == "0" ]]; then # if yes
 		output "Installing DHCPD" green
@@ -123,16 +129,15 @@ EOF
 	fi
 }
 
-nfs_setup ()
-{
+nfs_setup (){
 	confirm "Install nfs-kernel-server"
 	if [[ $? == "0" ]]; then # if yes
 		output "Installing NFS" green
 		apt install -y nfs-kernel-server
 	fi
 }
-syslinux_setup ()
-{
+
+syslinux_setup (){
 	confirm "Install syslinux?"
 	if [[ $? == "0" ]]; then # if yes
 		output "Installing syslinux" green
@@ -142,8 +147,7 @@ syslinux_setup ()
 	fi
 }
 
-pxelinux_setup ()
-{
+pxelinux_setup (){
      	confirm "Install pxelinux?"
       	if [[ $? == "0" ]]; then # if yes
      		output "Installing pxelinux" green
@@ -152,16 +156,10 @@ pxelinux_setup ()
      		cp -a ${pxelinux_dir}lpxelinux.0 ${tftp_dir}
 	fi
 }
+
 ## Start of script
 
-sudo -v
-
-#check_root
-
-#if [[ $? != "0"  ]]; then # returns 0 if root
-#     	output "You need to be root" red
-#	exit 0
-#fi
+ensure_root
 
 confirm "Setup filestructure"
 if [[ $? == "0" ]];then
