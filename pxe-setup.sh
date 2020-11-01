@@ -90,7 +90,7 @@ else
 fi
 output "DOWNLOAD SPLASH IMAGE = ${msg}" green
 
-if [[ ${install_tftpd} == "0" ]]; then
+if [[ ${install_tftp} == "0" ]]; then
 	msg="true"
 else
 	msg="false"
@@ -130,10 +130,12 @@ confirm	"Would you like to proceed? press 'Y' to initiate the unattended setup o
 #		$0
 #		exit 0
 #	fi
-	if [[ $? == "1" ]]; then  #if anything but yes is returned
+ans=$?
+	if [[ ${ans} == "1" ]]; then  #if anything but yes is returned
 		$0
 		exit 0
-	elif [[ $? == "2" ]]; then #if quit is entered
+	elif [[ ${ans} == "2" ]]; then #if quit is entered
+		echo "Goodbye!"
 		exit 0
 	fi
 }
@@ -264,10 +266,10 @@ if [[ ${pxemenu_flag} == "0" ]]; then
 fi
 
 if [[ ${dl_splash} == "0" ]]; then
-	download_splah
+	download_splash
 fi
 
-if [[ ${install_tftpd} == "0" ]]; then
+if [[ ${install_tftp} == "0" ]]; then
 	tftpd_setup
 fi
 
