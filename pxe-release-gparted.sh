@@ -15,19 +15,16 @@ default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
 
-ensure_root ()
-{
-	sudo -v
-	#check_root
+ensure_root (){
+	check_root
 
-	#if [[ $? != "0" ]]; then  #Checks for root
-	#	output "You need to have root privilages to run this script!" red
-	#	exit 0
-	#fi
+	if [[ $? != "0" ]]; then  #Checks for root
+		output "You need to have root privilages to run this script!" red
+		exit 0
+	fi
 }
 
-check_arg ()
-{
+check_arg (){
 	if [[ ! -z $1 ]]; then
 		arg=$1
 	
@@ -58,8 +55,7 @@ check_arg ()
 	fi
 }
 
-select_flavour ()
-{
+select_flavour (){
 
 title="Please select architecture"
 prompt="Pick an option:"
@@ -85,8 +81,7 @@ options=("x86"
 	menu_de="${de^}"
 }
 
-select_version ()
-{
+select_version (){
 	prompt="Enter version number: "
 	read -p "${prompt}" version
 	
@@ -98,8 +93,7 @@ select_version ()
 	output "You entered: ${version}" blue
 }
 
-dl_file ()
-{
+dl_file (){
 	if [[ ! -z ${url} ]]; then  ## if the image is a URL
 		confirm "Would you like to download the iso?"  #yes no question
 
@@ -111,8 +105,7 @@ dl_file ()
 	fi
 }
 
-fs_create ()
-{
+fs_create (){
 	confirm "would you like the filesystem created?"  #yes no question
 
 	if [[ $? == "0" ]]; then #if yes
@@ -122,8 +115,7 @@ fs_create ()
 	fi
 }
 
-pxe_menu ()
-{
+pxe_menu (){
 	confirm "Would you like a PXE menu entry added?"  #yes no question
 
 	if [[ $? == "0" ]]; then  #if yes
@@ -133,8 +125,7 @@ pxe_menu ()
 	fi
 }
 
-exports_add ()
-{
+exports_add (){
 	confirm "Would you like to add an entry to the exports file?"  #yes no question
 
 	if [[ $? == "0" ]]; then  #if yes
@@ -144,8 +135,7 @@ exports_add ()
 	fi
 }
 
-rm_iso ()
-{
+rm_iso (){
 	confirm "Would you like to delete the local iso?"  #yes no question
 
 	if [[ $? == "0" ]]; then  #if yes
@@ -155,8 +145,7 @@ rm_iso ()
 	fi
 }
 
-conf_details ()
-{
+conf_details (){
 	output "See details entered below:" blue
 	if [[ ${url_file} == "0" ]]; then
 		output "URL = ${url}" green
@@ -219,32 +208,27 @@ conf_details ()
 	fi
 }
 
-create_dir ()
-{
+create_dir (){
 	output "Creating path ${distro_dir}/${version}/${arch}/${de}" blue
 	sudo mkdir -p "${distro_dir}/${version}/${arch}/${de}"
 }
 
-mount_iso ()
-{
+mount_iso (){
 	output "Mounting the ISO" blue
 	sudo mount -o loop,ro ${file} ${mount_point}
 }
 
-copy_files ()
-{
+copy_files (){
 	output "Copying loop files" blue
 	sudo cp -a ${mount_point}/. "${distro_dir}/${version}/${arch}/${de}"
 }
 
-umount_iso ()
-{
+umount_iso (){
 	output "Unmounting the ISO" blue
 	sudo umount ${mount_point}
 }
 
-append_menu ()
-{
+append_menu (){
 	search "menu begin tools" "${default_menu}"
 	if [[ $? != "0" ]]; then
 		output "Adding default menu entry" blue
@@ -334,8 +318,7 @@ EOF
 	fi
 }
 
-append_exports ()
-{
+append_exports (){
 	search  "${distro_dir}/${version}/${arch}/${de}/" "/etc/exports"
 	if [[ $? != "0" ]]; then
 		output "Adding entry to exports" blue
