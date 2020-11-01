@@ -212,7 +212,6 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
         filename "/lpxelinux.0";
 }
 EOF
-#	fi
 }
 
 nfs_setup (){
@@ -235,13 +234,13 @@ pxelinux_setup (){
 }
 
 ## Start of script
-
+echo "0"
 ensure_root
-
+echo "1"
 setup_unattended
-
+echo "2"
 conf_details
-
+echo "3"
 if [[ ${pxemenu_flag} == "0" ]]; then
 	filestructure_setup
 fi
