@@ -17,12 +17,13 @@ default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ensure_root ()
 {
-	check_root
+	sudo -v
+	#check_root
 
-	if [[ $? != "0" ]]; then  #Checks for root
-		output "You need to have root privilages to run this script!" red
-		exit 0
-	fi
+	#if [[ $? != "0" ]]; then  #Checks for root
+	#	output "You need to have root privilages to run this script!" red
+	#	exit 0
+	#fi
 }
 
 check_arg ()
