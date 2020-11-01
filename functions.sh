@@ -34,6 +34,9 @@ confirm() {
          [Nn][Oo]|[Nn])  # No or N.
          return 1
       ;;
+      	 [Qq][Uu][Ii][Tt]|[Qq]) # Quit or q
+	 return 2
+      ;;
          *) # Anything else (excluding a blank) is invalid.
       ;;
       esac

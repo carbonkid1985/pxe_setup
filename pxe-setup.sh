@@ -125,9 +125,15 @@ else
 fi
 output "INSTALL PXELINUX = ${msg}" green
 
-confirm	"Would you like to proceed? press 'Y' to initiate the unattended setup of the pxe server, press 'N' to edit any details:"
-	if [[ $? != "0" ]]; then  #if anything but yes is returned
+confirm	"Would you like to proceed? press 'Y' to initiate the unattended setup of the pxe server, press 'N' to edit any details, or 'Q' to quit:"
+#	if [[ $? != "0" ]]; then  #if anything but yes is returned
+#		$0
+#		exit 0
+#	fi
+	if [[ $? == "1" ]]; then  #if anything but yes is returned
 		$0
+		exit 0
+	elif [[ $? == "2" ]]; then #if quit is entered
 		exit 0
 	fi
 }
@@ -246,13 +252,13 @@ pxelinux_setup (){
 }
 
 ## Start of script
-echo "0"
+
 ensure_root
-echo "1"
+
 setup_unattended
-echo "2"
+
 conf_details
-echo "3"
+
 if [[ ${pxemenu_flag} == "0" ]]; then
 	filestructure_setup
 fi
