@@ -25,52 +25,52 @@ if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
 
 	confirm "Configure pxemenu conf file?"
 	if [[ $? == "0" ]]; then # if yes
-		pxemenu_flag = "0"
+		pxemenu_flag="0"
 	else 
-		pxemenu_flag = "1"
+		pxemenu_flag="1"
 	fi
 	
 	confirm "Pull down background image?"
 	if [[ $? == "0" ]]; then # if yes
-		dl_splash = "0"
+		dl_splash="0"
 	else
-		dl_splash = "1"
+		dl_splash="1"
 	fi
 fi
 
 	confirm "Install tftpd-hpa?"
 	if [[ $? == "0" ]]; then # if yes
-		install_tftp = "0"
+		install_tftp="0"
 	else
-		install_tftp = "1"
+		install_tftp="1"
 	fi
 	
 	confirm "Install isc-dhcpd"
 	if [[ $? == "0" ]]; then # if yes
-		install_dhcp = "0"
+		install_dhcp="0"
 	else
-		install_dhcp = "1"
+		install_dhcp="1"
 	fi
 	
 	confirm "Install nfs-kernel-server"
 	if [[ $? == "0" ]]; then # if yes
-		install_nfs = "0"
+		install_nfs="0"
 	else
-		install_nfs = "1"
+		install_nfs="1"
 	fi
 
 	confirm "Install syslinux?"
 	if [[ $? == "0" ]]; then # if yes
-		install_syslinux = "0"
+		install_syslinux="0"
 	else
-		install_syslinux = "1"
+		install_syslinux="1"
 	fi
 
      	confirm"Install pxelinux?"
       	if [[ $? == "0" ]]; then # if yes
-		install_pxelinux = "0"
+		install_pxelinux="0"
 	else
-		install_pxelinux = "1"
+		install_pxelinux="1"
 	fi
 }
 
