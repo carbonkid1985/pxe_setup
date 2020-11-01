@@ -3,14 +3,12 @@
 source functions.sh
 
 ## global vars
-#nfs_server_ip=192.168.0.2
 tftpd_conf="/etc/default/tftpd-hpa"
 dhcpd_conf="/etc/dhcp/dhcpd.conf"
 tftp_dir="/data/tftpboot/"
 syslinux_dir="/usr/lib/syslinux/modules/bios/"
 pxelinux_dir="/usr/lib/PXELINUX/"
 splash_image="https://i.imgur.com/ktEA3WS.png"
-#mount_point="/mnt"
 
 ensure_root (){
 	check_root
@@ -21,16 +19,114 @@ ensure_root (){
 	fi
 }
 
+setup_unattended(){
+
+if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
+
+	confirm "Configure pxemenu conf file?"
+	if [[ $? == "0" ]]; then # if yes
+		pxemenu_flag = "0"
+	else 
+		pxemenu_flag = "1"
+	fi
+	
+	confirm "Pull down background image?"
+	if [[ $? == "0" ]]; then # if yes
+		dl_splash = "0"
+	else
+		dl_splash = "1"
+	fi
+fi
+
+	confirm "Install tftpd-hpa?"
+	if [[ $? == "0" ]]; then # if yes
+		install_tftp = "0"
+	else
+		install_tftp = "1"
+	fi
+	
+	confirm "Install isc-dhcpd"
+	if [[ $? == "0" ]]; then # if yes
+		install_dhcp = "0"
+	else
+		install_dhcp = "1"
+	fi
+	
+	confirm "Install nfs-kernel-server"
+	if [[ $? == "0" ]]; then # if yes
+		install_nfs = "0"
+	else
+		install_nfs = "1"
+	fi
+
+	confirm "Install syslinux?"
+	if [[ $? == "0" ]]; then # if yes
+		install_syslinux = "0"
+	else
+		install_syslinux = "1"
+	fi
+
+     	confirm"Install pxelinux?"
+      	if [[ $? == "0" ]]; then # if yes
+		install_pxelinux = "0"
+	else
+		install_pxelinux = "1"
+	fi
+}
+
+conf_details (){
+
+if [[ ${pxemenu_flag} == "0" ]]; then
+	msg="true"
+else
+	msg="false"
+fi
+output "SETUP PXELINUX BASE CONFIG = ${msg}" green
+
+if [[ ${dl_splash} == "0" ]]; then
+	download_splah
+fi
+output "DOWNLOAD SPLASH IMAGE = ${msg}" green
+
+if [[ ${install_tftpd} == "0" ]]; then
+	tftpd_setup
+fi
+output "INSTALL TFTP-HPA = ${msg}" green
+
+if [[ ${install_dhcp} == "0" ]]; then
+	dhcpd_setup
+fi
+output "INSTALL ISC-DHCP = ${msg}" green
+
+if [[ ${install_nfs} == "0" ]]; then
+	nfs_setup
+fi
+output "INSTALL NFS-KERNEL-SERVER = ${msg}" green
+
+if [[ ${install_syslinux} == "0" ]]; then
+	syslinux_setup
+fi
+output "INSTALL SYSLINUX = ${msg}" green
+
+if [[ ${install_pxelinux} == "0" ]]; then
+	pxelinux_setup
+fi
+output "INSTALL PXELINUX = ${msg}" green
+
+confirm	"Would you like to proceed? press 'Y' to initiate the unattended setup of the pxe server, press 'N' to edit any details:"
+	if [[ $? != "0" ]]; then  #if anything but yes is returned
+		$0
+		exit 0
+	fi
+}
+
 filestructure_setup (){
-     	if [[ ! -f "${tftp_dir}pxelinux.cfg/pxe.conf" ]]; then
-	       	confirm "Configure pxe menu conf file?"
-		if [[ $? == "0" ]]; then # if yes
-			if [[ ! -f "${tftp_dir}pxelinux.cfg/" ]]; then
-	       			output "Creating file structure" green
-		 		mkdir -p ${tftp_dir}pxelinux.cfg
-			fi
-		 	output "Creating pxe menu conf" green
-cat > "${tftp_dir}pxelinux.cfg/pxe.conf" << EOF
+	if [[ ! -f "${tftp_dir}pxelinux.cfg/" ]]; then
+		output "Creating file structure" green
+ 		mkdir -p ${tftp_dir}pxelinux.cfg
+	fi
+ 	output "Creating pxe menu conf" green
+	cat > "${tftp_dir}pxelinux.cfg/pxe.conf" << EOF
 MENU TITLE  Pavey's PXE Server
 MENU BACKGROUND pxelinux.cfg/pxe_splash.png
 NOESCAPE 1
@@ -46,11 +142,10 @@ menu color unsel		37;44		#c04f4e63 #00000000 std
 menu color help			37;40		#c0ffffff #00000000 std
 menu color border		51;153;255	#00ffffff #00000000 none
 EOF
-		fi
-		search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
-		if [[ -f "${tftp_dir}pxelinux.cfg/default" ]] || [[ $? != "0" ]]; then
-			output "Creating default menu" green
-cat > "${tftp_dir}pxelinux.cfg/default" << EOF
+	search "vesamenu.c32" "${tftp_dir}pxelinux.cfg/default"
+	if [[ -f "${tftp_dir}pxelinux.cfg/default" ]] || [[ $? != "0" ]]; then
+		output "Creating default menu" green
+	cat > "${tftp_dir}pxelinux.cfg/default" << EOF
 DEFAULT vesamenu.c32 
 TIMEOUT 50
 ONTIMEOUT BootLocal
@@ -65,31 +160,24 @@ LABEL BootLocal
 ENDTEXT
 
 EOF
-		fi
-		confirm "Pull down background image?"
-		if [[ $? == "0" ]]; then # if yes
-			wget $splash_image -O /tmp/pxe_splash.png
-			if [[ -f "/tmp/pxe_splash.png" ]]; then
-				mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
-				output "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png" green
-			else
-				output "Error downloading image" red
-			fi
-		fi 
 	fi
 }
 
-#services_setup ()
-#{
-#}
+download_splash(){
+	wget $splash_image -O /tmp/pxe_splash.png
+	if [[ -f "/tmp/pxe_splash.png" ]]; then
+		mv /tmp/pxe_splash.png ${tftp_dir}pxelinux.cfg/pxe_splash.png
+		output "File saved in ${tftp_dir}pxelinux.cfg/pxe_splash.png" green
+	else
+		output "Error downloading image" red
+	fi
+}
 
 tftpd_setup (){
-	confirm "Install tftpd-hpa?"
-	if [[ $? == "0" ]]; then # if yes
-	       	output "Installing TFTPD" green
-		apt install -y tftpd-hpa
-		output "Modifying ${tftpd_conf}" green
-cat > "${tftpd_conf}" << EOF
+      	output "Installing TFTPD" green
+	apt install -y tftpd-hpa
+	output "Modifying ${tftpd_conf}" green
+	cat > "${tftpd_conf}" << EOF
 # /etc/default/tftpd-hpa
 
 TFTP_USERNAME="tftp"
@@ -97,16 +185,14 @@ TFTP_DIRECTORY="/data/tftpboot"
 TFTP_ADDRESS=":69"
 TFTP_OPTIONS="--secure --verbose"
 EOF
-	fi
+#	fi
 }
 
 dhcpd_setup (){
-	confirm "Install isc-dhcpd"
-	if [[ $? == "0" ]]; then # if yes
 		output "Installing DHCPD" green
 		apt install -y isc-dhcp-server
 		output "Modifying ${dhcpd_conf}" green
-cat > "${dhcpd_conf}" << EOF
+	cat > "${dhcpd_conf}" << EOF
 # dhcpd.conf
 
 default-lease-time 600;
@@ -126,51 +212,61 @@ subnet 192.168.0.0 netmask 255.255.255.0 {
         filename "/lpxelinux.0";
 }
 EOF
-	fi
+#	fi
 }
 
 nfs_setup (){
-	confirm "Install nfs-kernel-server"
-	if [[ $? == "0" ]]; then # if yes
 		output "Installing NFS" green
 		apt install -y nfs-kernel-server
-	fi
 }
 
 syslinux_setup (){
-	confirm "Install syslinux?"
-	if [[ $? == "0" ]]; then # if yes
 		output "Installing syslinux" green
 		apt install -y syslinux
 		output "Copy required files from ${syslinux_dir}" green
 		cp -a ${syslinux_dir}. ${tftp_dir}
-	fi
 }
 
 pxelinux_setup (){
-     	confirm "Install pxelinux?"
-      	if [[ $? == "0" ]]; then # if yes
      		output "Installing pxelinux" green
      		apt install -y pxelinux
      		output "Copy required files from ${pxelinux_dir}" green
      		cp -a ${pxelinux_dir}lpxelinux.0 ${tftp_dir}
-	fi
 }
 
 ## Start of script
 
 ensure_root
 
-confirm "Setup filestructure"
-if [[ $? == "0" ]];then
+setup_unattended
+
+conf_details
+
+if [[ ${pxemenu_flag} == "0" ]]; then
 	filestructure_setup
 fi
 
-confirm "Install services?"
-if [[ $? == "0" ]]; then # if yes
-  	tftpd_setup
-    	dhcpd_setup
-      	nfs_setup
-	syslinux_setup
-      	pxelinux_setup
+if [[ ${dl_splash} == "0" ]]; then
+	download_splah
 fi
+
+if [[ ${install_tftpd} == "0" ]]; then
+	tftpd_setup
+fi
+
+if [[ ${install_dhcp} == "0" ]]; then
+	dhcpd_setup
+fi
+
+if [[ ${install_nfs} == "0" ]]; then
+	nfs_setup
+fi
+
+if [[ ${install_syslinux} == "0" ]]; then
+	syslinux_setup
+fi
+
+if [[ ${install_pxelinux} == "0" ]]; then
+	pxelinux_setup
+fi
+
