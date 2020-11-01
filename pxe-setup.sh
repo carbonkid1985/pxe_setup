@@ -154,12 +154,14 @@ pxelinux_setup ()
 }
 ## Start of script
 
-check_root
+sudo =v
 
-if [[ $? != "0"  ]]; then # returns 0 if root
-     	output "You need to be root" red
-	exit 0
-fi
+#check_root
+
+#if [[ $? != "0"  ]]; then # returns 0 if root
+#     	output "You need to be root" red
+#	exit 0
+#fi
 
 confirm "Setup filestructure"
 if [[ $? == "0" ]];then
