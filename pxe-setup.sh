@@ -66,7 +66,7 @@ fi
 		install_syslinux="1"
 	fi
 
-     	confirm"Install pxelinux?"
+     	confirm "Install pxelinux?"
       	if [[ $? == "0" ]]; then # if yes
 		install_pxelinux="0"
 	else
@@ -84,32 +84,44 @@ fi
 output "SETUP PXELINUX BASE CONFIG = ${msg}" green
 
 if [[ ${dl_splash} == "0" ]]; then
-	download_splah
+	msg="true"
+else
+	msg="false"
 fi
 output "DOWNLOAD SPLASH IMAGE = ${msg}" green
 
 if [[ ${install_tftpd} == "0" ]]; then
-	tftpd_setup
+	msg="true"
+else
+	msg="false"
 fi
 output "INSTALL TFTP-HPA = ${msg}" green
 
 if [[ ${install_dhcp} == "0" ]]; then
-	dhcpd_setup
+	msg="true"
+else
+	msg="false"
 fi
 output "INSTALL ISC-DHCP = ${msg}" green
 
 if [[ ${install_nfs} == "0" ]]; then
-	nfs_setup
+	msg="true"
+else
+	msg="false"
 fi
 output "INSTALL NFS-KERNEL-SERVER = ${msg}" green
 
 if [[ ${install_syslinux} == "0" ]]; then
-	syslinux_setup
+	msg="true"
+else
+	msg="false"
 fi
 output "INSTALL SYSLINUX = ${msg}" green
 
 if [[ ${install_pxelinux} == "0" ]]; then
-	pxelinux_setup
+	msg="true"
+else
+	msg="false"
 fi
 output "INSTALL PXELINUX = ${msg}" green
 
