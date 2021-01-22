@@ -70,7 +70,7 @@ select_flavour (){
 			2) flavour="full_iso"; de="loop"; menu_flavour="Full ISO"; menu_de="${de^^}";;
 #			3) flavour="other";;
 			$(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
-			*) output "Invalid option. Try another one." red;continue;;
+			*) output "Invalid option. Try another one." red; continue;;
 	
 		esac
 			
