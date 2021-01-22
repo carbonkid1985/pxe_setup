@@ -55,12 +55,12 @@ check_arg (){
 	fi
 }
 
-select_flavour (){
+select_arch (){
 
-title="Please select architecture"
-prompt="Pick an option:"
-options=("x86" 
-	"x64")
+	title="Select architecture"
+	prompt="Pick an option:"
+	options=("x86" 
+		"x64")
 
 	output "${title}" green
         PS3="${prompt} "
@@ -70,15 +70,45 @@ options=("x86"
                         2) arch="x64"; menu_arch="64bit";;
                         $(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
                         *) output "Invalid option. Try another one." red;continue;;
-
                 esac
 		break
         done
 
 	flavour="gparted"
-	de="fluxbox"
 	menu_flavour="${flavour^}"
-	menu_de="${de^}"
+}
+
+select_flavour (){
+
+	title="Select desktop environmet"
+	prompt="Pick an option:"
+	options=("Fluxbox"
+		"Other")
+
+	output "${title}" green
+	PS3="${prompt} "
+	select opt in "${options[@]}" "Quit"; do
+        	case "${REPLY}" in
+                        1) de="fluxbox";  menu_de="${de^}";;
+                       	2) de="other";;
+                        $(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
+                        *) output "Invalid option. Try another one." red;continue;;
+
+                esac
+
+                if [[ ${de} == "other" ]]; then
+                        prompt="Enter desktop environment: "
+                        read -p "${prompt}" de
+
+                        while [[ -z ${de} ]]; do
+                                output "No input entered" red
+                                read -p "${prompt}" de
+                        done
+                        menu_de="${de^}"
+                fi
+                output "You entered: ${de^}" blue
+                break
+        done
 }
 
 select_version (){
@@ -335,8 +365,9 @@ check_arg $1
 
 # set parameter
 
-select_flavour
+select_arch
 select_version
+select_flavour
 dl_file
 fs_create
 pxe_menu
