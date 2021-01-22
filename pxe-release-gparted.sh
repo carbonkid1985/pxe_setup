@@ -69,7 +69,7 @@ select_arch (){
                         1) arch="x86"; menu_arch="32bit";;
                         2) arch="x64"; menu_arch="64bit";;
                         $(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
-                        *) output "Invalid option. Try another one." red;continue;;
+                        *) output "Invalid option. Try another one." red; continue;;
                 esac
 		break
         done
@@ -92,7 +92,7 @@ select_flavour (){
                         1) de="fluxbox";  menu_de="${de^}";;
                        	2) de="other";;
                         $(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
-                        *) output "Invalid option. Try another one." red;continue;;
+                        *) output "Invalid option. Try another one." red; continue;;
 
                 esac
 
