@@ -78,7 +78,7 @@ select_flavour (){
 			6) flavour="ubuntu_budgie"; de="budgie"; menu_flavour="Ubuntu Budgie"; menu_de="${de^}";;
 			7) flavour="other";;
 			$(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
-			*) output "Invalid option. Try another one." red;continue;;
+			*) output "Invalid option. Try another one." red; continue;;
 	
 		esac
 			
