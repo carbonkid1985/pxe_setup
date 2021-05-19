@@ -336,7 +336,7 @@ LABEL ${rand}
         MENU LABEL ${menu_flavour} ${version} ${menu_arch}
         KERNEL /tools/gparted/${version}/${arch}/${de}/live/vmlinuz
         INITRD /tools/gparted/${version}/${arch}/${de}/live/initrd.img
-	APPEND boot=live config components locales=gb_GB.UTF-8 keyboard-layouts=gb gl_batch union=overlay username=user splash noswap noeject ip=dhcp vga=788 netboot=nfs nfsroot=${nfs_server_ip}:${distro_dir}/${version}/${arch}/${de}
+	APPEND boot=live config components locales=gb_GB.UTF-8 keyboard-layouts=gb gl_batch union=overlay username=user splash noswap noeject vga=788 netboot=nfs nfsroot=${nfs_server_ip}:${distro_dir}/${version}/${arch}/${de}
 	TEXT HELP
         Boot ${menu_flavour} live ${version} ${menu_arch}
 ENDTEXT
