@@ -5,8 +5,8 @@ source functions.sh
 ## global vars ##
 
 nfs_server_ip="192.168.0.2"
-tftp_dir="/data/tftpboot"
 mount_point="/mnt"
+tftp_dir="/data/tftpboot"
 sub_dir="${tftp_dir}/tools"
 distro_dir="${sub_dir}/gparted"
 sub_menu_path="${sub_dir}/tools.menu"
