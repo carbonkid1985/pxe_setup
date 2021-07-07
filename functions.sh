@@ -76,11 +76,11 @@ check_root() {
 #    exit 0
 # fi
 
-if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+if [[ $(/usr/bin/id -u) == 0 ]]; then
 #   echo "Not running as root"
-   return 1
-else
    return 0
+else
+   return 1
 fi
 }
 
