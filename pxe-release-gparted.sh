@@ -71,6 +71,7 @@ select_arch (){
                         $(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
                         *) output "Invalid option. Try another one." red; continue;;
                 esac
+		output "You entered: ${arch} (${menu_arch})" blue
 		break
         done
 
@@ -311,7 +312,7 @@ MENU END
 EOF
 
 	else
-		output "WARNING! Distro menu entry already exists. Skipping" yellow 
+		output "INFORMATION. Distro menu entry already exists. Skipping" yellow 
 	fi
    
 	if [[ ! -f "${distro_menu_path}" ]]; then
@@ -344,7 +345,7 @@ ENDTEXT
 EOF
 
 	else
-		output "WARNING! Flavour menu entry already exists. Skipping" yellow 
+		output "INFORMATION. Flavour menu entry already exists. Skipping" yellow 
 	fi
 }
 
