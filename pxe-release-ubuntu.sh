@@ -8,6 +8,7 @@ nfs_server_ip="192.168.0.2"
 net_root="192.168.0.0/24"
 tftp_dir="/data/tftpboot"
 mount_point="/mnt"
+arch="x64"
 sub_dir="${tftp_dir}/ubuntu"
 distro_dir="${sub_dir}/desktop"
 sub_menu_path="${sub_dir}/ubuntu.menu"
@@ -234,8 +235,8 @@ conf_details (){
 }
 
 create_dir (){
-	output "Creating path ${distro_dir}/${version}/x64/${de}" blue
-	sudo mkdir -p "${distro_dir}/${version}/x64/${de}"
+	output "Creating path ${distro_dir}/${version}/${arch}/${de}" blue
+	sudo mkdir -p "${distro_dir}/${version}/${arch}/${de}"
 }
 
 mount_iso (){
@@ -245,7 +246,7 @@ mount_iso (){
 
 copy_files (){
 	output "Copying loop files" blue
-	sudo cp -a ${mount_point}/. "${distro_dir}/${version}/x64/${de}"
+	sudo cp -a ${mount_point}/. "${distro_dir}/${version}/${arch}/${de}"
 }
 
 umount_iso (){
@@ -320,19 +321,19 @@ EOF
 
    	fi  
 	
-	search "menu label ${menu_flavour} ${version} x64 ${menu_de}" "${distro_menu_path}"
+	search "menu label ${menu_flavour} ${version} ${arch} ${menu_de}" "${distro_menu_path}"
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
 		
 cat >> "${distro_menu_path}" << EOF
 LABEL ${rand}
-	MENU LABEL ${menu_flavour} ${version} x64 ${menu_de}
-	KERNEL /ubuntu/desktop/${version}/x64/${de}/casper/vmlinuz
-	INITRD /ubuntu/desktop/${version}/x64/${de}/casper/initrd
-	APPEND ip=dhcp boot=casper text vga=normal netboot=nfs nfsroot=${nfs_server_ip}:${distro_dir}/${version}/x64/${de} splash --
+	MENU LABEL ${menu_flavour} ${version} ${arch} ${menu_de}
+	KERNEL /ubuntu/desktop/${version}/${arch}/${de}/casper/vmlinuz
+	INITRD /ubuntu/desktop/${version}/${arch}/${de}/casper/initrd
+	APPEND ip=dhcp boot=casper text vga=normal netboot=nfs nfsroot=${nfs_server_ip}:${distro_dir}/${version}/${arch}/${de} splash --
 	TEXT HELP
-	Boot ${menu_flavour} ${version} x64 ${menu_de}
+	Boot ${menu_flavour} ${version} ${arch} ${menu_de}
 ENDTEXT
 
 EOF
@@ -343,10 +344,10 @@ EOF
 }
 
 append_exports (){
-	search  "${distro_dir}/${version}/x64/${de}/" "/etc/exports"
+	search  "${distro_dir}/${version}/${arch}/${de}/" "/etc/exports"
 	if [[ $? != "0" ]]; then
 		output "Adding entry to exports" blue
-		echo "${distro_dir}/${version}/x64/${de}/		${net_root}(ro,async,no_subtree_check)" >> /etc/exports
+		echo "${distro_dir}/${version}/${arch}/${de}/		${net_root}(ro,async,no_subtree_check)" >> /etc/exports
 	else
 		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi
