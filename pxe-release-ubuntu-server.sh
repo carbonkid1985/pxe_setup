@@ -279,7 +279,7 @@ MENU END
 EOF
 
 	else
-		output "WARNING! Distro menu entry already exists. Skipping" yellow 
+		output "INFORMATION. Distro menu entry already exists. Skipping" yellow 
 	fi
    
 	if [[ ! -f "${distro_menu_path}" ]]; then
@@ -328,7 +328,7 @@ ENDTEXT
 EOF
 		fi
 	else
-		output "WARNING! Flavour menu entry already exists. Skipping" yellow 
+		output "INFORMATION. Flavour menu entry already exists. Skipping" yellow 
 	fi
 }
 
