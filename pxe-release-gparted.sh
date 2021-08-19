@@ -5,6 +5,7 @@ source functions.sh
 ## global vars ##
 
 nfs_server_ip="192.168.0.2"
+net_root="192.168.0.0/24"
 mount_point="/mnt"
 tftp_dir="/data/tftpboot"
 sub_dir="${tftp_dir}/tools"
@@ -353,7 +354,7 @@ append_exports (){
 	search  "${distro_dir}/${version}/${arch}/${de}/" "/etc/exports"
 	if [[ $? != "0" ]]; then
 		output "Adding entry to exports" blue
-		echo "${distro_dir}/${version}/${arch}/${de}/		192.168.0.0/24(ro,async,no_subtree_check)" >> /etc/exports
+		echo "${distro_dir}/${version}/${arch}/${de}/		${net_root}(ro,async,no_subtree_check)" >> /etc/exports
 	else
 		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi
