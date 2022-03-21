@@ -298,7 +298,12 @@ EOF
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
-
+		search "${rand}" "${distro_menu_path}"
+		while [[ $? == "0" ]];
+                        do
+                                printf -v rand "%05d" $((1 + RANDOM % 32767))
+                                search "${rand}" "${distro_menu_path}"
+                        done
 		if [[ ${flavour} == "netboot" ]]; then
 
 cat >> "${distro_menu_path}" << EOF

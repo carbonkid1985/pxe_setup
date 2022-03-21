@@ -17,9 +17,8 @@ default_menu="${tftp_dir}/pxelinux.cfg/default"
 
 ## functions
 
-ensure_root () {
+ensure_root (){
 	check_root
-
 	if [[ $? != "0" ]]; then  #Checks for root
 		output "You need to have root privilages to run this script!" red
 		exit 0
@@ -29,7 +28,6 @@ ensure_root () {
 check_arg (){
 	if [[ ! -z $1 ]]; then
 		arg=$1
-	
 		if [[ -f ${arg} ]]; then
 			file=${arg}
 			ext=${file##*.}
@@ -67,21 +65,20 @@ select_flavour (){
 	 	"Ubuntu Mate"
 	 	"Ubuntu Budgie"
  	 	"Other")
-		
+
 	output "${title}" green
 	PS3="${prompt} "
 	select opt in "${options[@]}" "Quit"; do
 		case "${REPLY}" in
-			1) flavour="ubuntu"; de="gnome"; menu_flavour="${flavour^}"; menu_de="${de^}";;
-			2) flavour="xubuntu"; de="xfce"; menu_flavour="${flavour^}"; menu_de="${de^^}";;
-			3) flavour="lubuntu"; de="lxde"; menu_flavour="${flavour^}"; menu_de="${de^^}";;
-			4) flavour="kubuntu"; de="kde"; menu_flavour="${flavour^}"; menu_de="${de^^}";;
-			5) flavour="ubuntu_mate"; de="mate"; menu_flavour="Ubuntu Mate"; menu_de="${de^^}";;
+			1) flavour="ubuntu";        de="gnome";  menu_flavour="${flavour^}";   menu_de="${de^}";;
+			2) flavour="xubuntu";       de="xfce";   menu_flavour="${flavour^}";   menu_de="${de^^}";;
+			3) flavour="lubuntu";       de="lxde";   menu_flavour="${flavour^}";   menu_de="${de^^}";;
+			4) flavour="kubuntu";       de="kde";    menu_flavour="${flavour^}";   menu_de="${de^^}";;
+			5) flavour="ubuntu_mate";   de="mate";   menu_flavour="Ubuntu Mate";   menu_de="${de^^}";;
 			6) flavour="ubuntu_budgie"; de="budgie"; menu_flavour="Ubuntu Budgie"; menu_de="${de^}";;
 			7) flavour="other";;
 			$(( ${#options[@]}+1 )) ) output "Goodbye!" green; exit 0;;
 			*) output "Invalid option. Try another one." red; continue;;
-	
 		esac
 			
 		if [[ ${flavour} == "other"  ]]; then
@@ -325,7 +322,15 @@ EOF
 	if [[ $? != "0" ]]; then
 		output "Adding flavour menu entry" blue
 		printf -v rand "%05d" $((1 + RANDOM % 32767))
-		
+		search "${rand}" "${distro_menu_path}"
+		while [[ $? == "0" ]];
+			do
+				printf -v rand "%05d" $((1 + RANDOM % 32767))
+				search "${rand}" "${distro_menu_path}"
+			done
+
+
+
 cat >> "${distro_menu_path}" << EOF
 LABEL ${rand}
 	MENU LABEL ${menu_flavour} ${version} ${arch} ${menu_de}
