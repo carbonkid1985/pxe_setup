@@ -255,7 +255,7 @@ pxelinux_setup (){
 
 ## Start of script
 
-ensure_root
+#ensure_root
 
 setup_unattended
 
