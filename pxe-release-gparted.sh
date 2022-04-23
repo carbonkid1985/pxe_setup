@@ -368,7 +368,7 @@ append_exports (){
 
 ### Start of script ###
 
-#ensure_root
+ensure_root
 check_arg $1
 
 # set parameter
