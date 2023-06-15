@@ -356,7 +356,44 @@ append_exports (){
 	else
 		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi
-	}
+}
+
+perform_actions (){
+	if [[ ! -z ${url} ]]; then
+		if [[ ${dl_flag} == "0" ]]; then  #if yes
+			output "Download started" blue
+			wget ${url} -O /tmp/${iso}
+
+			if [[ ! -f ${file} ]]; then
+       			output "Unable to find downloaded file. Please check URL" red; exit 0
+   			fi
+		fi
+	fi
+
+	if [[ ${fs_flag} == "0" ]]; then  #if yes
+   		create_dir
+   		mount_iso
+   		copy_files
+   		umount_iso
+	fi
+
+	if [[ ${pxemenu_flag} == "0" ]]; then  #if yes
+	   	append_menu
+	fi
+	
+	if [[ ${exports_flag} == "0" ]]; then  #if yes
+	   	append_exports
+   		output "Restarting nfs server" blue
+   		sudo systemctl restart nfs-kernel-server.service
+	fi
+
+	if [[ -f ${file} ]]; then
+		if [[ ${delete_flag} == "0" ]]; then  #if yes
+			output "Deleting local iso file ${file}" blue
+	     		sudo rm ${file}
+		fi
+	fi
+}
 
 ### Start of script ###
 
@@ -373,41 +410,8 @@ pxe_menu
 exports_add
 rm_iso
 conf_details
+perform_actions
 
-if [[ ! -z ${url} ]]; then
-	if [[ ${dl_flag} == "0" ]]; then  #if yes
-		output "Download started" blue
-		wget ${url} -O /tmp/${iso}
-
-		if [[ ! -f ${file} ]]; then
-       		output "Unable to find downloaded file. Please check URL" red; exit 0
-   		fi
-	fi
-fi
-
-if [[ ${fs_flag} == "0" ]]; then  #if yes
-   	create_dir
-   	mount_iso
-   	copy_files
-   	umount_iso
-fi
-
-if [[ ${pxemenu_flag} == "0" ]]; then  #if yes
-   	append_menu
-fi
-
-if [[ ${exports_flag} == "0" ]]; then  #if yes
-   	append_exports
-   	output "Restarting nfs server" blue
-   	sudo systemctl restart nfs-kernel-server.service
-fi
-
-if [[ -f ${file} ]]; then
-	if [[ ${delete_flag} == "0" ]]; then  #if yes
-		output "Deleting local iso file ${file}" blue
-     		sudo rm ${file}
-	fi
-fi
-
+## If script has't crashed out ##
 output "Success! All operations completed" green
 exit 0
