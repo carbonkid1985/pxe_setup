@@ -364,7 +364,7 @@ append_exports (){
 	else
 		output "WARNING! NFS Exports entry already exists. Skipping" yellow 
 	fi
-	}
+}
 
 perform_actions (){
 	if [[ ! -z ${url} ]]; then
@@ -401,7 +401,7 @@ perform_actions (){
      			sudo rm ${file}
 		fi
 	fi
-	}
+}
 
 ### Start of script ###
 
